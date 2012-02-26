@@ -1,6 +1,6 @@
 = redis-model
 
-Description goes here.
+Redis model is basic implementation of few methods for creating model which store data in Redis
 
 == Contributing to redis-model
  
@@ -16,4 +16,3 @@ Description goes here.
 
 Copyright (c) 2012 Ondrej Bartas. See LICENSE.txt for
 further details.
-
