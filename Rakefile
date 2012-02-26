@@ -1,4 +1,5 @@
 # encoding: utf-8
+ENV['RACK_ENV'] ||= "development"
 
 require 'rubygems'
 require 'bundler'
@@ -17,8 +18,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "redis-model"
   gem.homepage = "http://github.com/ondrejbartas/redis-model"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Redis model is basic implementation of creating, finding, updating and deleting model which store data in Redis.}
+  gem.description = %Q{It provides functions as find, find_by_alias, get, exists?, validate, save etc.}
   gem.email = "ondrej@bartas.cz"
   gem.authors = ["Ondrej Bartas"]
   # dependencies defined in Gemfile
@@ -32,22 +33,58 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
-require 'rcov/rcovtask'
-Rcov::RcovTask.new do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
-  test.rcov_opts << '--exclude "gems/*"'
-end
-
 task :default => :test
 
-require 'rdoc/task'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "redis-model #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+#get directories!
+PIDS_DIR = File.expand_path(File.join("..", "tmp","pid"), __FILE__)
+CONF_DIR = File.expand_path(File.join("..", "config"), __FILE__)
+#create directory for pid files
+FileUtils.mkdir_p(PIDS_DIR) unless File.exists?(PIDS_DIR)
+REDIS_PID = File.join(PIDS_DIR, "redis.pid")
+
+#copy example config files for redis and elastic if they don't exists
+FileUtils.cp(File.join(CONF_DIR, "redis_config.yml.example"), File.join(CONF_DIR, "redis_config.yml") ) unless File.exists?(File.join(CONF_DIR, "redis_config.yml")) 
+
+#for testing purposes use 
+REDIS_CNF = File.join(File.expand_path(File.join("..","config"), __FILE__), "redis_setup.conf")
+
+desc "Run tests and manage databases start/stop"
+task :run => [:'redis:start', :test, :'redis:stop']
+
+desc "Start databases"
+task :startup => [:'redis:start']
+
+desc "Teardown databases"
+task :teardown => [:'redis:stop']
+
+Rake::TestTask.new(:test) do |t|
+  t.test_files = FileList['test/functional/*_test.rb', 'test/unit/*_test.rb','test/integration/*_test.rb']
+  t.warning = false
+  t.verbose = false
+end
+
+namespace :redis do
+  desc "Start the Redis server"
+  task :start do
+    redis_running = \
+    begin
+      File.exists?(REDIS_PID) && Process.kill(0, File.read(REDIS_PID).to_i)
+    rescue Errno::ESRCH
+      FileUtils.rm REDIS_PID
+      false
+    end
+    system "pwd"
+    puts system "redis-server #{REDIS_CNF}" unless redis_running
+    puts "redis started"
+  end
+
+  desc "Stop the Redis server"
+  task :stop do
+    if File.exists?(REDIS_PID)
+      Process.kill "INT", File.read(REDIS_PID).to_i
+      FileUtils.rm REDIS_PID
+      puts "redis stopped"
+    end
+  end
 end
