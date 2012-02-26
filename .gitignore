@@ -2,6 +2,10 @@
 coverage
 coverage.data
 
+.rvmrc
+Gemfile.lock
+config/*.yml
+
 # rdoc generated
 rdoc
 
