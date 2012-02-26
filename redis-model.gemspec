@@ -4,7 +4,7 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = "redis-model"
+  s.name = "redis-model-extension"
   s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -26,12 +26,12 @@ Gem::Specification.new do |s|
     "config/redis_config.yml.example",
     "config/redis_setup.conf",
     "lib/database.rb",
-    "lib/redis-model.rb",
+    "lib/redis-model-extension.rb",
     "lib/string_to_bool.rb",
     "test/helper.rb",
-    "test/test_redis-model.rb"
+    "test/test_redis-model-extension.rb"
   ]
-  s.homepage = "http://github.com/ondrejbartas/redis-model"
+  s.homepage = "http://github.com/ondrejbartas/redis-model-extension"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.10"

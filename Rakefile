@@ -15,8 +15,8 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "redis-model"
-  gem.homepage = "http://github.com/ondrejbartas/redis-model"
+  gem.name = "redis-model-extension"
+  gem.homepage = "http://github.com/ondrejbartas/redis-model-extension"
   gem.license = "MIT"
   gem.summary = %Q{Redis model is basic implementation of creating, finding, updating and deleting model which store data in Redis.}
   gem.description = %Q{It provides functions as find, find_by_alias, get, exists?, validate, save etc.}

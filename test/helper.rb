@@ -13,7 +13,7 @@ require 'shoulda-context'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'redis-model'
+require 'redis-model-extension'
 
 class Test::Unit::TestCase
 end
