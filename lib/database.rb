@@ -9,7 +9,7 @@ module Database
       YAML.load_file('config/redis_config.yml')[ENV['RACK_ENV'] || 'development'].symbolize_keys
     else
       FileUtils.mkdir_p('config') unless File.exists?('config')
-      FileUtils.cp(File.join(File.dirname(__FILE__),"/config/redis_config.yml.example"), 'config/redis_config.yml.example')
+      FileUtils.cp(File.join(File.dirname(__FILE__),"../config/redis_config.yml.example"), 'config/redis_config.yml.example')
       raise ArgumentError, "Redis configuration file does not exists -> 'config/redis_config.yml', please provide it! I have created example file in config directory..."
     end
   end
