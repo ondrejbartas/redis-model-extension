@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "redis-model-extension"
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ondrej Bartas"]
-  s.date = "2012-02-26"
+  s.date = "2012-03-06"
   s.description = "It provides functions as find, find_by_alias, get, exists?, validate, save etc."
   s.email = "ondrej@bartas.cz"
   s.extra_rdoc_files = [
@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
     "lib/database.rb",
     "lib/redis-model-extension.rb",
     "lib/string_to_bool.rb",
+    "redis-model-extension.gemspec",
     "redis-model.gemspec",
     "test/helper.rb",
     "test/test_redis-model-extension.rb"
