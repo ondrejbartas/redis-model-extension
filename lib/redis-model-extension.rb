@@ -1,5 +1,6 @@
 # -*- encoding : utf-8 -*-
 require 'pp'
+require 'yaml'
 require 'redis'
 require 'active_support'
 require 'active_support/inflector'
