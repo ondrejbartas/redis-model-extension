@@ -232,7 +232,10 @@ module RedisModel
   
     #take all arguments and send them out
     def to_arg
-      self.args
+      self.args.inject({}) do |output, item|
+        output[item.first] = item.last.send(self.class.conf[:fields][item.first.to_sym])
+        output
+      end
     end
   
     #if this record exists in database

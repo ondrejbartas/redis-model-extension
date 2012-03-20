@@ -109,6 +109,11 @@ class RedisModelTest < Test::Unit::TestCase
         assert_equal @getted_model.symbol, @test_model.symbol
         assert_equal @getted_model.boolean, @test_model.boolean
       end
+
+      should "have same elements after get and to_arg" do
+        @getted_model = TestRedisModel.get(@args)
+        assert_equal @getted_model.to_arg, @args
+      end
       
       should "be getted by alias" do
         @getted_model = TestRedisModel.get_by_alias(:token ,@args)
