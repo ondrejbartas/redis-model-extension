@@ -244,7 +244,7 @@ module RedisModel
     def destroy!
       if exists?
         #destroy main object
-        Database.redis.del(generate_key) 
+        Database.redis.del(redis_key) 
         destroy_aliases!
       end
     end
