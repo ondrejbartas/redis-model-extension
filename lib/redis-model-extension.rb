@@ -50,7 +50,7 @@ module RedisModel
     
     #Generates redis key for storing object
     def generate_key(args = {})
-      out = "#{self.name.to_s.underscore.to_sym}:key:"
+      out = "#{self.name.to_s.underscore.to_sym}:key"
       @conf[:redis_key].each do |key|
         if args.has_key?(key)
           out += ":#{args[key]}"
