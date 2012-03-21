@@ -50,7 +50,7 @@ module RedisModel
     
     #Generates redis key for storing object
     def generate_key(args = {})
-      out = "#{self.name.to_s.downcase.to_sym}"
+      out = "#{self.name.to_s.underscore.to_sym}:key:"
       @conf[:redis_key].each do |key|
         if args.has_key?(key)
           out += ":#{args[key]}"
@@ -63,7 +63,7 @@ module RedisModel
     
     #Generates redis key for storing indexes for aliases
     def generate_alias_key(alias_name, args = {})
-      out = "#{self.name.to_s.downcase.to_sym}:#{alias_name}"
+      out = "#{self.name.to_s.underscore.to_sym}:alias:#{alias_name}"
       @conf[:redis_aliases][alias_name.to_sym].each do |key|
         if args.has_key?(key)
           out += ":#{args[key]}"
