@@ -13,7 +13,7 @@ require 'database'
 
 module RedisModel
 
-  attr_accessor :args, :error, :old_key, :conf
+  attr_accessor :args, :error, :old_args, :conf
   
   def self.included(base) 
     base.send :extend, ClassMethods         
@@ -115,10 +115,14 @@ module RedisModel
       
       #is key specified directly? -> no needs of looking for other keys! -> faster
       if klass.valid_key?(args)
-        out << klass.new(args.merge(Database.redis.hgetall(klass.generate_key(args))).merge({:old_key => klass.generate_key(args)})) if klass.exists?(args)
+        if klass.exists?(args)
+          data_args = Database.redis.hgetall(klass.generate_key(args))
+          out << klass.new(args.merge(data_args).merge({:old_args => data_args})) 
+        end
       else
         Database.redis.keys(klass.generate_key(args)).each do |key|
-          out << klass.new(args.merge(Database.redis.hgetall(key)).merge({:old_key => key}))
+          data_args = Database.redis.hgetall(key)
+          out << klass.new(args.merge(data_args).merge({:old_args => data_args}))
         end
       end
       out
@@ -145,8 +149,9 @@ module RedisModel
     def get(args = {})
       args.symbolize_keys!
       klass = self.name.constantize
-      if klass.valid_key?(args)
-        klass.new(args.merge(Database.redis.hgetall(klass.generate_key(args))).merge({:old_key => klass.generate_key(args)})) if klass.exists?(args)
+      if klass.valid_key?(args) && klass.exists?(args)
+        data_args = Database.redis.hgetall(klass.generate_key(args))
+        klass.new(args.merge(data_args).merge({:old_args => data_args})) 
       else
         nil
       end
@@ -159,7 +164,8 @@ module RedisModel
       if klass.valid_alias_key?(alias_name, args) && klass.alias_exists?(alias_name, args)
         key = Database.redis.get(klass.generate_alias_key(alias_name, args))
         if Database.redis.exists(key)
-          klass.new(args.merge(Database.redis.hgetall(key)).merge({:old_key => key})) 
+          data_args = Database.redis.hgetall(key)
+          klass.new(args.merge(data_args).merge({:old_args => data_args})) 
         else
           nil
         end
@@ -174,7 +180,7 @@ module RedisModel
       if Database.redis.exists(alias_key)
         key = Database.redis.get(alias_key)
         if Database.redis.exists(key)
-          klass.new(args.merge(Database.redis.hgetall(key)).merge({:old_key => key}))
+          klass.new(args.merge(Database.redis.hgetall(key)).merge({:old_args => key}))
         else
           nil
         end
@@ -189,10 +195,9 @@ module RedisModel
     
     def initialize(args={})
       args.symbolize_keys!
-      #if old_key is specified, don't usi it in args hash
-      if args[:old_key] && args[:old_key].size > 0 
-        self.old_key = args[:old_key] 
-        args.delete(:old_key)
+      #if old_args is specified, don't usi it in args hash
+      if args[:old_args] && args[:old_args].size > 0 
+        self.old_args = args.delete(:old_args).symbolize_keys
       end
       self.args = clear_args(args)
       return self
@@ -254,9 +259,12 @@ module RedisModel
 
     #remove all aliases
     def destroy_aliases!
-      self.class.conf[:redis_aliases].each do |alias_name, fields|
-        if self.class.valid_alias_key?(alias_name, self.args) && self.class.alias_exists?(alias_name, self.args)
-          Database.redis.del(self.class.generate_alias_key(alias_name, self.args)) 
+      #do it only if it is existing object!
+      if self.old_args
+        self.class.conf[:redis_aliases].each do |alias_name, fields|
+          if self.class.valid_alias_key?(alias_name, self.old_args) && self.class.alias_exists?(alias_name, self.old_args)
+            Database.redis.del(self.class.generate_alias_key(alias_name, self.old_args)) 
+          end
         end
       end
     end
@@ -284,14 +292,14 @@ module RedisModel
       if valid?
         #generate key (possibly new)
         generated_key = redis_key
-        Database.redis.rename(self.old_key, generated_key) if self.old_key && generated_key != self.old_key
+        Database.redis.rename(self.class.generate_key(self.old_args), generated_key) if self.old_args && generated_key != self.class.generate_key(self.old_args) && Database.redis.exists(self.class.generate_key(self.old_args))
         Database.redis.hmset(generated_key, *self.args.reject{|k,v| v.nil?}.inject([]){ |arr,kv| arr + [kv[0], kv[1].to_s]})
         
         #destroy aliases
         destroy_aliases!
         create_aliases
         #after save make new_key -> old_key
-        self.old_key = generated_key  
+        self.old_args = self.args
         return self
       else
         raise ArgumentError, @error.join(", ")

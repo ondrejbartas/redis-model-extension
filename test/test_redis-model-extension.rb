@@ -68,12 +68,12 @@ class RedisModelTest < Test::Unit::TestCase
          
     context "redis key" do
       should "generate right key" do
-        assert_equal @test_model.redis_key, "redismodeltest::testredismodel:foo"
-        assert_equal TestRedisModel.generate_key(@args), "redismodeltest::testredismodel:foo"
+        assert_equal @test_model.redis_key, "#{TestRedisModel.to_s.underscore}:key:foo"
+        assert_equal TestRedisModel.generate_key(@args), "#{TestRedisModel.to_s.underscore}:key:foo"
       end  
       should "generate right key alias" do
-        assert_equal @test_model.redis_alias_key(:token), "redismodeltest::testredismodel:token:bar"
-        assert_equal TestRedisModel.generate_alias_key(:token, @args), "redismodeltest::testredismodel:token:bar"
+        assert_equal @test_model.redis_alias_key(:token), "#{TestRedisModel.to_s.underscore}:alias:token:bar"
+        assert_equal TestRedisModel.generate_alias_key(:token, @args), "#{TestRedisModel.to_s.underscore}:alias:token:bar"
       end  
     end
     
@@ -114,13 +114,22 @@ class RedisModelTest < Test::Unit::TestCase
         @getted_model = TestRedisModel.get(@args)
         assert_equal @getted_model.to_arg, @args
       end
-      
-      should "be getted by alias" do
-        @getted_model = TestRedisModel.get_by_alias(:token ,@args)
-        assert_equal @getted_model.integer, @test_model.integer
-        assert_equal @getted_model.string, @test_model.string
-        assert_equal @getted_model.symbol, @test_model.symbol
-        assert_equal @getted_model.boolean, @test_model.boolean
+            
+      context "alias" do
+        should "be getted by alias" do
+          @getted_model = TestRedisModel.get_by_alias(:token ,@args)
+          assert_equal @getted_model.integer, @test_model.integer
+          assert_equal @getted_model.string, @test_model.string
+          assert_equal @getted_model.symbol, @test_model.symbol
+          assert_equal @getted_model.boolean, @test_model.boolean
+        end
+        
+        should "be getted after change in alias" do
+          getted_model = TestRedisModel.get_by_alias(:token ,@args)
+          getted_model.symbol = "Test_token"
+          getted_model.save
+          assert_equal getted_model.integer, TestRedisModel.get_by_alias(:token ,:symbol => "Test_token").integer
+        end
       end
     end
     
