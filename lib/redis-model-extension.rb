@@ -299,7 +299,7 @@ module RedisModel
         destroy_aliases!
         create_aliases
         #after save make new_key -> old_key
-        self.old_args = self.args
+        self.old_args = self.args.clone
         return self
       else
         raise ArgumentError, @error.join(", ")

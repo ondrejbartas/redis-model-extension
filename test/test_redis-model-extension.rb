@@ -102,6 +102,13 @@ class RedisModelTest < Test::Unit::TestCase
         @test_model.save
       end
       
+      should "be saved and then change of variable included in key should rename it in redis!" do
+        assert_equal Database.redis.keys("*").size, 2 #including key and alias
+        @test_model.string = "change_of_strging"
+        @test_model.save
+        assert_equal Database.redis.keys("*").size, 2 #including key and alias
+      end
+
       should "have same elements after get" do
         @getted_model = TestRedisModel.get(@args)
         assert_equal @getted_model.integer, @test_model.integer
