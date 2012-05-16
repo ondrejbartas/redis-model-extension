@@ -6,7 +6,7 @@ module Database
 
   def self.config
     if File.exists?('config/redis_config.yml')
-      YAML.load_file('config/redis_config.yml')[ENV['RACK_ENV'] || 'development'].symbolize_keys
+      YAML.load_file('config/redis_config.yml')[ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'].symbolize_keys
     else
       FileUtils.mkdir_p('config') unless File.exists?('config')
       FileUtils.cp(File.join(File.dirname(__FILE__),"../config/redis_config.yml.example"), 'config/redis_config.yml.example')
