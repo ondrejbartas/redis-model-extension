@@ -155,7 +155,21 @@ module RedisModel
       else
         nil
       end
-    end    
+    end
+
+    #if you know redis key and would like to get object
+    def get_by_redis_key(redis_key)
+      if redis_key.is_a?(String) && Database.redis.exists(redis_key)
+        if redis_key.include?("*")
+          data_args = Database.redis.hgetall(redis_key)
+          klass.new(data_args.merge({:old_args => data_args})) 
+        else
+          raise ArgumentError, "RedisKey for method get_by_redis_key can not contains '*'"
+        end
+      else
+        nil
+      end
+    end 
 
     #fastest method to get object from redis by getting it by alias and arguments
     def get_by_alias(alias_name, args = {})
