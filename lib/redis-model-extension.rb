@@ -160,7 +160,7 @@ module RedisModel
     #if you know redis key and would like to get object
     def get_by_redis_key(redis_key)
       if redis_key.is_a?(String) && Database.redis.exists(redis_key)
-        if redis_key.include?("*")
+        unless redis_key.include?("*")
           data_args = Database.redis.hgetall(redis_key)
           klass.new(data_args.merge({:old_args => data_args})) 
         else
