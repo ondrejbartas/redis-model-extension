@@ -2,6 +2,24 @@
 
 Redis model is basic implementation of few methods for creating model which store data in Redis
 
+## Initialization
+
+You can use yml config file in `config` directory:
+
+``` yml
+test:
+  host: "127.0.0.1"
+  port: 6379
+  db: 3
+other omnited...
+```
+
+Or you can setup directly in initializer (or before any of redis call) redis instance directly:
+
+``` ruby
+RedisModelExtension::Database.redis = Redis.new(host: "127.0.0.1", port: 6379, db: 0)
+```
+
 ## Usage
 
 ``` ruby

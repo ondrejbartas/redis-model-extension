@@ -94,12 +94,12 @@ module RedisModel
 
     #Check if key by arguments exists in db
     def exists?(args = {})
-      Database.redis.exists(self.name.constantize.generate_key(args))
+      RedisModelExtension::Database.redis.exists(self.name.constantize.generate_key(args))
     end
 
     #Check if key by alias name and arguments exists in db
     def alias_exists?(alias_name, args = {})
-      Database.redis.exists(self.name.constantize.generate_alias_key(alias_name, args))
+      RedisModelExtension::Database.redis.exists(self.name.constantize.generate_alias_key(alias_name, args))
     end
 
     #Wrapper around find to get all instances
@@ -116,12 +116,12 @@ module RedisModel
       #is key specified directly? -> no needs of looking for other keys! -> faster
       if klass.valid_key?(args)
         if klass.exists?(args)
-          data_args = Database.redis.hgetall(klass.generate_key(args))
+          data_args = RedisModelExtension::Database.redis.hgetall(klass.generate_key(args))
           out << klass.new(args.merge(data_args).merge({:old_args => data_args})) 
         end
       else
-        Database.redis.keys(klass.generate_key(args)).each do |key|
-          data_args = Database.redis.hgetall(key)
+        RedisModelExtension::Database.redis.keys(klass.generate_key(args)).each do |key|
+          data_args = RedisModelExtension::Database.redis.hgetall(key)
           out << klass.new(args.merge(data_args).merge({:old_args => data_args}))
         end
       end
@@ -138,7 +138,7 @@ module RedisModel
       if klass.valid_alias_key?(alias_name, args)
         out << klass.get_by_alias(alias_name, args) if klass.alias_exists?(alias_name, args)
       else
-        Database.redis.keys(klass.generate_alias_key(alias_name, args)).each do |key|
+        RedisModelExtension::Database.redis.keys(klass.generate_alias_key(alias_name, args)).each do |key|
           out << klass.get_by_alias_key(key)
         end
       end
@@ -150,7 +150,7 @@ module RedisModel
       args.symbolize_keys!
       klass = self.name.constantize
       if klass.valid_key?(args) && klass.exists?(args)
-        data_args = Database.redis.hgetall(klass.generate_key(args))
+        data_args = RedisModelExtension::Database.redis.hgetall(klass.generate_key(args))
         klass.new(args.merge(data_args).merge({:old_args => data_args})) 
       else
         nil
@@ -159,9 +159,9 @@ module RedisModel
 
     #if you know redis key and would like to get object
     def get_by_redis_key(redis_key)
-      if redis_key.is_a?(String) && Database.redis.exists(redis_key)
+      if redis_key.is_a?(String) && RedisModelExtension::Database.redis.exists(redis_key)
         unless redis_key.include?("*")
-          data_args = Database.redis.hgetall(redis_key)
+          data_args = RedisModelExtension::Database.redis.hgetall(redis_key)
           klass = self.name.constantize
           klass.new(data_args.merge({:old_args => data_args})) 
         else
@@ -177,9 +177,9 @@ module RedisModel
       args.symbolize_keys!
       klass = self.name.constantize
       if klass.valid_alias_key?(alias_name, args) && klass.alias_exists?(alias_name, args)
-        key = Database.redis.get(klass.generate_alias_key(alias_name, args))
-        if Database.redis.exists(key)
-          data_args = Database.redis.hgetall(key)
+        key = RedisModelExtension::Database.redis.get(klass.generate_alias_key(alias_name, args))
+        if RedisModelExtension::Database.redis.exists(key)
+          data_args = RedisModelExtension::Database.redis.hgetall(key)
           klass.new(args.merge(data_args).merge({:old_args => data_args})) 
         else
           nil
@@ -192,10 +192,10 @@ module RedisModel
     #fastest method to get object from redis by getting it by alias and arguments
     def get_by_alias_key(alias_key)
       klass = self.name.constantize
-      if Database.redis.exists(alias_key)
-        key = Database.redis.get(alias_key)
-        if Database.redis.exists(key)
-          klass.new(args.merge(Database.redis.hgetall(key)).merge({:old_args => key}))
+      if RedisModelExtension::Database.redis.exists(alias_key)
+        key = RedisModelExtension::Database.redis.get(alias_key)
+        if RedisModelExtension::Database.redis.exists(key)
+          klass.new(args.merge(RedisModelExtension::Database.redis.hgetall(key)).merge({:old_args => key}))
         else
           nil
         end
@@ -260,14 +260,14 @@ module RedisModel
   
     #if this record exists in database
     def exists?
-      Database.redis.exists(self.class.generate_key(self.args))
+      RedisModelExtension::Database.redis.exists(self.class.generate_key(self.args))
     end
 
     #remove record form database
     def destroy!
       if exists?
         #destroy main object
-        Database.redis.del(redis_key) 
+        RedisModelExtension::Database.redis.del(redis_key) 
         destroy_aliases!
       end
     end
@@ -278,7 +278,7 @@ module RedisModel
       if self.old_args
         self.class.conf[:redis_aliases].each do |alias_name, fields|
           if self.class.valid_alias_key?(alias_name, self.old_args) && self.class.alias_exists?(alias_name, self.old_args)
-            Database.redis.del(self.class.generate_alias_key(alias_name, self.old_args)) 
+            RedisModelExtension::Database.redis.del(self.class.generate_alias_key(alias_name, self.old_args)) 
           end
         end
       end
@@ -288,7 +288,7 @@ module RedisModel
     def create_aliases
       main_key = redis_key
       self.class.conf[:redis_aliases].each do |alias_name, fields|
-        Database.redis.set(self.class.generate_alias_key(alias_name, self.args), main_key) if self.class.valid_alias_key?(alias_name, self.args)
+        RedisModelExtension::Database.redis.set(self.class.generate_alias_key(alias_name, self.args), main_key) if self.class.valid_alias_key?(alias_name, self.args)
       end
     end
   
@@ -307,8 +307,8 @@ module RedisModel
       if valid?
         #generate key (possibly new)
         generated_key = redis_key
-        Database.redis.rename(self.class.generate_key(self.old_args), generated_key) if self.old_args && generated_key != self.class.generate_key(self.old_args) && Database.redis.exists(self.class.generate_key(self.old_args))
-        Database.redis.hmset(generated_key, *self.args.reject{|k,v| v.nil?}.inject([]){ |arr,kv| arr + [kv[0], kv[1].to_s]})
+        RedisModelExtension::Database.redis.rename(self.class.generate_key(self.old_args), generated_key) if self.old_args && generated_key != self.class.generate_key(self.old_args) && RedisModelExtension::Database.redis.exists(self.class.generate_key(self.old_args))
+        RedisModelExtension::Database.redis.hmset(generated_key, *self.args.reject{|k,v| v.nil?}.inject([]){ |arr,kv| arr + [kv[0], kv[1].to_s]})
         
         #destroy aliases
         destroy_aliases!

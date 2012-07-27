@@ -3,7 +3,7 @@ require 'helper'
 class RedisModelTest < Test::Unit::TestCase
   context "RedisModel" do
     setup do
-      Database.redis.flushdb
+      RedisModelExtension::Database.redis.flushdb
       
       class TestRedisModel
         REDIS_MODEL_CONF = {
@@ -103,10 +103,10 @@ class RedisModelTest < Test::Unit::TestCase
       end
       
       should "be saved and then change of variable included in key should rename it in redis!" do
-        assert_equal Database.redis.keys("*").size, 2 #including key and alias
+        assert_equal RedisModelExtension::Database.redis.keys("*").size, 2 #including key and alias
         @test_model.string = "change_of_strging"
         @test_model.save
-        assert_equal Database.redis.keys("*").size, 2 #including key and alias
+        assert_equal RedisModelExtension::Database.redis.keys("*").size, 2 #including key and alias
       end
 
       should "have same elements after get" do
