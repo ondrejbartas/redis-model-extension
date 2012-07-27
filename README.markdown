@@ -32,7 +32,7 @@ class TestRedisModel
        :symbol => :to_sym,
       }, 
       :required => [:integer, :string],
-      :redis_key => [:string],
+      :redis_key => [:string, :symbol],
       :redis_aliases => {
         :token => [:symbol]
       }
@@ -42,6 +42,39 @@ class TestRedisModel
 end
 
 foo = TestRedisModel.new()
+
+# you can validate your object
+
+if foo.valid?
+  foo.save #save object
+else
+  puts foo.errors #you can get nice errors what is wrong
+end
+
+#you can update more attributes at once
+foo.update(:integer => 234, :string => "bar")
+
+# !!! if you try to save invalid object you will get ArgumentError execption !!!
+
+# after save you can find and get object find_by_alias
+
+#this will return array of all object witch has string with value "foo"
+#you can perfor find only with keys which are in redis key
+#this is slow variant for redis but compared to other databases super fast :-)
+#if you specify all keys from redis key it will perform faster method get
+TestRedisModel.find(:string => "foo") 
+
+#you can use get method if you know all keys used in redis key
+#this variant is super fast
+TestRedisModel.get(:string => "foo", :symbol=> true) 
+
+#you can ask redis if this item exists
+TestRedisModel.exists?(:string => "foo", :symbol=> true) 
+
+#you can try to find by alias - alias needs to be uniq 
+#use alias only for uniq combination of keys
+TestRedisModel.find_by_alias(:token, :symbol=> true) 
+
 ```
 
 Now you can easily access all attributes from TestRedisModel by `foo.integer` or exists? `foo.integer?` or set value by `foo.integer = 1234` 
