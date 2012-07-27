@@ -302,6 +302,16 @@ module RedisModel
       self.class.generate_alias_key(alias_name, self.args)
     end
   
+    #update multiple attrubutes at once
+    def update args
+      args.each do |key, value|
+        method = "#{key}=".to_sym 
+        if self.respond_to? method
+          self.send(method, value)
+        end
+      end
+    end
+
     #save method
     def save
       if valid?

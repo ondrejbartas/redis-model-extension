@@ -97,6 +97,29 @@ class RedisModelTest < Test::Unit::TestCase
       end
     end
     
+    context "updating" do
+      setup do
+        @new_args = {:integer => 123457, :string => "bar", :symbol => :foo, :boolean => false}
+      end
+
+      should "change attributes" do
+        @test_model.update @new_args
+        assert_equal @test_model.integer, @new_args[:integer]
+        assert_equal @test_model.string, @new_args[:string]
+        assert_equal @test_model.symbol, @new_args[:symbol]
+        assert_equal @test_model.boolean, @new_args[:boolean]
+      end
+
+      should "ignore unknown attributes and other normaly update" do
+        @test_model.update @new_args.merge(:unknown => "attribute")
+        assert_equal @test_model.integer, @new_args[:integer]
+        assert_equal @test_model.string, @new_args[:string]
+        assert_equal @test_model.symbol, @new_args[:symbol]
+        assert_equal @test_model.boolean, @new_args[:boolean]
+      end
+
+    end
+
     context "saving" do
       setup do
         @test_model.save
