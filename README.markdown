@@ -51,6 +51,15 @@ else
   puts foo.errors #you can get nice errors what is wrong
 end
 
+# custom errors in initialize etc.
+#class declaration
+def initialize args = {}
+  error << "My custom error"
+  super args
+end
+#then valid? will produce false and when asked instance.errors you will get array with your errors
+
+
 #you can update more attributes at once
 foo.update(:integer => 234, :string => "bar")
 

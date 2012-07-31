@@ -215,6 +215,7 @@ module RedisModel
         self.old_args = args.delete(:old_args).symbolize_keys
       end
       self.args = clear_args(args)
+
       return self
     end
     
@@ -236,7 +237,7 @@ module RedisModel
     
     #validates required attributes
     def valid?
-      @error = []
+      @error ||= []
       self.class.conf[:required].each do |key|
         if !self.args.has_key?(key) || self.args[key].nil?
           @error.push("Required #{key}")
@@ -244,10 +245,15 @@ module RedisModel
       end
       @error.size == 0
     end
+
+    #return error from validation
+    def error
+      @error ||= []
+    end
   
     #return error from validation
     def errors 
-      @errors
+      @error ||= []
     end
   
     #take all arguments and send them out
