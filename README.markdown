@@ -4,7 +4,7 @@ Redis model is basic implementation of few methods for creating model which stor
 
 ## Initialization
 
-You can use yml config file in `config` directory:
+You can use yml config file `redis_config.yml` in `config` directory:
 
 ``` yml
 test:
@@ -18,6 +18,17 @@ Or you can setup directly in initializer (or before any of redis call) redis ins
 
 ``` ruby
 RedisModelExtension::Database.redis = Redis.new(host: "127.0.0.1", port: 6379, db: 0)
+```
+
+Or last way to set redis is by providing only config arguments:
+Use this in your initializer and when you use Forks or resque workers this will work very nicely, 
+unless you will call to redis before workers are initialized.
+Then you will get error Redis instance cannot be used in Forks. 
+You can fix this by calling in the start of worker: `RedisModelExtension::Database.redis = nil`
+This will remove old not possible to use redis instance and in first call to redis will use new config and create new redis instance.
+
+``` ruby
+RedisModelExtension::Database.redis_config(:host => "127.0.0.1", :port => 6379, :db => 0)
 ```
 
 ## Usage

@@ -15,6 +15,11 @@ module RedisModelExtension
       end
     end
     
+    def self.redis_config= conf
+      raise ArgumentError, "Argument must be hash {:host => '..', :port => 6379, :db => 0 }" unless conf.has_key?(:host) && conf.has_key?(:port) && conf.has_key?(:db)
+      @redis_config = conf
+    end
+
     def self.redis= redis
       if redis.is_a?(Redis) #valid redis instance
         @redis = redis  
@@ -26,7 +31,12 @@ module RedisModelExtension
     end
 
     def self.redis
-      @redis ||= Redis.new(Database.config)
+      #if redis is already defined
+      return @redis if @redis
+      #if you provided redis config
+      return @redis = Redis.new(@redis_config) if @redis_config
+      #if you provided yml config
+      return @redis = Redis.new(Database.config)
     end
 
   end

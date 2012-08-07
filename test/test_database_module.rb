@@ -15,6 +15,14 @@ class DatabaseModuleTest < Test::Unit::TestCase
       assert RedisModelExtension::Database.redis.is_a? Redis
     end
 
+    should "be initialized by config arguments" do
+      assert_nothing_raised do
+        RedisModelExtension::Database.redis_config = {host: "127.0.0.1", port: 6379, db: 0}
+        RedisModelExtension::Database.redis.info
+      end
+      assert RedisModelExtension::Database.redis.is_a? Redis
+    end
+
     should "be initialized from config" do
       assert_nothing_raised do
         RedisModelExtension::Database.redis.info
