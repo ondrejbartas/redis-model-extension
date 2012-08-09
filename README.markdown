@@ -46,7 +46,11 @@ class TestRedisModel
       :redis_key => [:string, :symbol],
       :redis_aliases => {
         :token => [:symbol]
-      }
+      },
+      # (default is true) if true all nil values will not be saved into redis,
+      # there should be problem when you want to set some value to nil and same
+      # it will not be saved (use false to prevent this)
+      :reject_nil_values => false 
    }
    include RedisModel
    initialize_redis_model_methods REDIS_MODEL_CONF

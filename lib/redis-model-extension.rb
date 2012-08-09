@@ -23,7 +23,7 @@ module RedisModel
   module ClassMethods
     
     def initialize_redis_model_methods conf
-      @conf = conf
+      @conf = {:reject_nil_values => true}.merge(conf)
       #take all fields and make methods for them
       conf[:fields].each do |attr, action|
         define_method "#{attr}" do
@@ -324,7 +324,8 @@ module RedisModel
         #generate key (possibly new)
         generated_key = redis_key
         RedisModelExtension::Database.redis.rename(self.class.generate_key(self.old_args), generated_key) if self.old_args && generated_key != self.class.generate_key(self.old_args) && RedisModelExtension::Database.redis.exists(self.class.generate_key(self.old_args))
-        RedisModelExtension::Database.redis.hmset(generated_key, *self.args.reject{|k,v| v.nil?}.inject([]){ |arr,kv| arr + [kv[0], kv[1].to_s]})
+        args = self.class.conf[:reject_nil_values] ? self.args.reject{|k,v| v.nil?} : self.args
+        RedisModelExtension::Database.redis.hmset(generated_key, *args.inject([]){ |arr,kv| arr + [kv[0], kv[1].to_s]})
         
         #destroy aliases
         destroy_aliases!
