@@ -1,7 +1,7 @@
 # rcov generated
 coverage
-coverage.data
 
+.DS_Store
 .rvmrc
 Gemfile.lock
 config/*.yml
