@@ -1,12 +1,22 @@
 module RedisModel
-   module ClassMethods
-    
+  TYPE_TRANSLATIONS = { 
+    :integer => :to_i, 
+    :string => :to_s, 
+    :bool => :to_bool, 
+    :symbol => :to_sym, 
+    :array => :to_array, 
+    :hash => :to_hash, 
+    :time => :to_time, 
+    :date => :to_date 
+  }
+
+  module ClassMethods
+
     def initialize_redis_model_methods conf
       @conf = {:reject_nil_values => true}.merge(conf)
       #take all fields and make methods for them
-      type_translations = { :to_i => :integer, :to_s => :string, :to_bool => :bool, :to_sym => :symbol, :to_array => :array, :to_hash => :hash }
       conf[:fields].each do |name, action|
-        redis_fields_config[name] = type_translations[action]
+        redis_fields_config[name] = RedisModel::TYPE_TRANSLATIONS.invert[action]
         redis_fields_defaults_config[name] = nil
 
         define_method "#{name}" do
@@ -30,9 +40,8 @@ module RedisModel
     
     def conf
       fields = {}
-      type_translations = { :integer => :to_i, :string => :to_s, :bool => :to_bool, :symbol => :to_sym, :array => :to_array, :hash => :to_hash }
       redis_fields_config.each do |key, type|
-        fields[key] = type_translations[type] if type_translations.has_key?(type)
+        fields[key] = RedisModel::TYPE_TRANSLATIONS[type] if RedisModel::TYPE_TRANSLATIONS.has_key?(type)
       end
       {
         fields: fields,

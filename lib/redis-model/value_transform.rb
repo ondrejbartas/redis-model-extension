@@ -19,6 +19,8 @@ module RedisModel
       when :symbol then value.to_s
       when :array then value.to_json
       when :hash then value.to_json
+      when :time then Time.parse(value.to_s).strftime("%Y.%m.%d %H:%M:%S")
+      when :date then Date.parse(value.to_s).strftime("%Y-%m-%d")
       else value
       end
     end
@@ -33,6 +35,8 @@ module RedisModel
       when :symbol then value.to_s.to_sym
       when :array then value.is_a?(String) ? JSON.parse(value) : value
       when :hash then value.is_a?(String) ? JSON.parse(value) : value
+      when :time then value.is_a?(String) ? Time.parse(value) : value
+      when :date then value.is_a?(String) ? Date.parse(value) : value
       else value
       end
     end

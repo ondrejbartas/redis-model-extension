@@ -13,6 +13,8 @@ class RedisModelTest < Test::Unit::TestCase
         redis_field :symbol,  :symbol
         redis_field :array,   :array
         redis_field :hash,    :hash
+        redis_field :time,    :time
+        redis_field :date,    :date
         
         redis_validate :integer, :string 
         redis_key :string
@@ -20,7 +22,17 @@ class RedisModelTest < Test::Unit::TestCase
         redis_alias :token, [:symbol]
 
       end
-      @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true, :array => [1,2,3], :hash => {"foo"=>"bar", "test" => 2}}
+      @time = Time.now
+      @args = {
+        "integer" => 12345, 
+        :string => "foo", 
+        :symbol => :bar, 
+        :boolean => true, 
+        :array => [1,2,3], 
+        :hash => {"foo"=>"bar", "test" => 2}, 
+        :time => @time, 
+        :date => Date.today
+      }
       @test_model = TestRedisModel.new(@args)
       @test_model_partial = TestRedisModel.new(:integer => 12345, :string => "foo")
     end 
@@ -40,6 +52,8 @@ class RedisModelTest < Test::Unit::TestCase
         assert_equal @test_model.boolean, true
         assert_equal @test_model.array, [1,2,3]
         assert_equal @test_model.hash, {"foo"=>"bar", "test" => 2}
+        assert_equal @test_model.time, @time
+        assert_equal @test_model.date, Date.today
       end
       
       should "return valid exists?" do
@@ -49,6 +63,8 @@ class RedisModelTest < Test::Unit::TestCase
         assert_equal @test_model.boolean?, true
         assert_equal @test_model.array?, true
         assert_equal @test_model.hash?, true
+        assert_equal @test_model.time?, true
+        assert_equal @test_model.date?, true
         
         assert_equal @test_model_partial.integer?, true
         assert_equal @test_model_partial.string?, true
@@ -56,6 +72,8 @@ class RedisModelTest < Test::Unit::TestCase
         assert_equal @test_model_partial.boolean?, false
         assert_equal @test_model_partial.hash?, false
         assert_equal @test_model_partial.array?, false
+        assert_equal @test_model_partial.time?, false
+        assert_equal @test_model_partial.date?, false
       end
       
       should "be assign new values" do
@@ -65,12 +83,16 @@ class RedisModelTest < Test::Unit::TestCase
         @test_model.boolean = false
         @test_model.array = [4,5,6]
         @test_model.hash = {"bar" => "foo"}
+        @test_model.time = @time-100
+        @test_model.date = Date.today-10
         assert_equal @test_model.integer, 54321
         assert_equal @test_model.string, "bar"
         assert_equal @test_model.symbol, :foo
         assert_equal @test_model.boolean, false
         assert_equal @test_model.array, [4,5,6]
         assert_equal @test_model.hash, {"bar" => "foo"}
+        assert_equal @test_model.time, @time-100
+        assert_equal @test_model.date, Date.today-10
       end
     end
          
@@ -165,7 +187,8 @@ class RedisModelTest < Test::Unit::TestCase
 
       should "have same elements after get and to_arg" do
         @getted_model = TestRedisModel.get(@args)
-        assert_equal @getted_model.to_arg, @args
+        assert_same_elements @getted_model.to_arg.keys, @args.keys
+        assert_equal @getted_model.to_arg.values.collect{|a| a.to_s}.sort.join(","), @args.values.collect{|a| a.to_s}.sort.join(",")
       end
             
       context "alias" do
