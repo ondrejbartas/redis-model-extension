@@ -195,7 +195,8 @@ module RedisModel
       if RedisModelExtension::Database.redis.exists(alias_key)
         key = RedisModelExtension::Database.redis.get(alias_key)
         if RedisModelExtension::Database.redis.exists(key)
-          klass.new(args.merge(RedisModelExtension::Database.redis.hgetall(key)).merge({:old_args => key}))
+          old_args = RedisModelExtension::Database.redis.hgetall(key)
+          klass.new(old_args.merge({:old_args => old_args}))
         else
           nil
         end
