@@ -1,6 +1,14 @@
 module RedisModel
   module InstanceMethods
 
+    def value_to_redis name, value
+      if redis_fields_config.has_key?(name)
+        value_transform value, redis_fields_config[name]
+      else
+        value
+      end
+    end
+
     def value_transform value, type
       return nil if value.nil? || value.to_s.size == 0
       case type

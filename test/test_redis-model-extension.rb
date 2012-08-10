@@ -9,8 +9,10 @@ class RedisModelTest < Test::Unit::TestCase
         include RedisModel
         redis_field :integer, :integer
         redis_field :boolean, :bool
-        redis_field :string, :string
-        redis_field :symbol, :symbol
+        redis_field :string,  :string
+        redis_field :symbol,  :symbol
+        redis_field :array,   :array
+        redis_field :hash,    :hash
         
         redis_validate :integer, :string 
         redis_key :string
@@ -18,7 +20,7 @@ class RedisModelTest < Test::Unit::TestCase
         redis_alias :token, [:symbol]
 
       end
-      @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true}
+      @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true, :array => [1,2,3], :hash => {"foo"=>"bar", "test" => 2}}
       @test_model = TestRedisModel.new(@args)
       @test_model_partial = TestRedisModel.new(:integer => 12345, :string => "foo")
     end 
@@ -36,6 +38,8 @@ class RedisModelTest < Test::Unit::TestCase
         assert_equal @test_model.string, "foo"
         assert_equal @test_model.symbol, :bar
         assert_equal @test_model.boolean, true
+        assert_equal @test_model.array, [1,2,3]
+        assert_equal @test_model.hash, {"foo"=>"bar", "test" => 2}
       end
       
       should "return valid exists?" do
@@ -43,11 +47,15 @@ class RedisModelTest < Test::Unit::TestCase
         assert_equal @test_model.string?, true
         assert_equal @test_model.symbol?, true
         assert_equal @test_model.boolean?, true
+        assert_equal @test_model.array?, true
+        assert_equal @test_model.hash?, true
         
         assert_equal @test_model_partial.integer?, true
         assert_equal @test_model_partial.string?, true
         assert_equal @test_model_partial.symbol?, false
         assert_equal @test_model_partial.boolean?, false
+        assert_equal @test_model_partial.hash?, false
+        assert_equal @test_model_partial.array?, false
       end
       
       should "be assign new values" do
@@ -55,10 +63,14 @@ class RedisModelTest < Test::Unit::TestCase
         @test_model.string = "bar"
         @test_model.symbol = :foo
         @test_model.boolean = false
+        @test_model.array = [4,5,6]
+        @test_model.hash = {"bar" => "foo"}
         assert_equal @test_model.integer, 54321
         assert_equal @test_model.string, "bar"
         assert_equal @test_model.symbol, :foo
         assert_equal @test_model.boolean, false
+        assert_equal @test_model.array, [4,5,6]
+        assert_equal @test_model.hash, {"bar" => "foo"}
       end
     end
          
