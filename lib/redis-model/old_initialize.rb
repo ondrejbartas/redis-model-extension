@@ -31,7 +31,6 @@ module RedisModel
 
   module InstanceMethods
      def initialize(args={})
-      args.symbolize_keys!
       #if old_args is specified, don't usi it in args hash
       if args[:old_args] && args[:old_args].size > 0 
         self.old_args = args.delete(:old_args).symbolize_keys

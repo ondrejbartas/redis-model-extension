@@ -15,7 +15,7 @@ class RedisModelTest < Test::Unit::TestCase
         redis_validate :integer, :string 
         redis_key :string
       end
-      @args = {:integer => 12345, :string => "foo", :symbol => :bar, :boolean => true}
+      @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true}
       @test_model = TestRedisModel.new(@args)
       @test_model_partial = TestRedisModel.new(:integer => 12345, :string => "foo")
     end 

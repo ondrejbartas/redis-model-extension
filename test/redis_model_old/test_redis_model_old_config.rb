@@ -23,7 +23,7 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
          include RedisModel
          initialize_redis_model_methods REDIS_MODEL_CONF
       end
-      @args = {:integer => 12345, :string => "foo", :symbol => :bar, :boolean => true}
+      @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true}
       @test_model = TestRedisModel.new(@args)
       @test_model_partial = TestRedisModel.new(:integer => 12345, :string => "foo")
     end 
