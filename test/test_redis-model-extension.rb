@@ -14,6 +14,9 @@ class RedisModelTest < Test::Unit::TestCase
         
         redis_validate :integer, :string 
         redis_key :string
+
+        redis_alias :token, [:symbol]
+
       end
       @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true}
       @test_model = TestRedisModel.new(@args)
@@ -73,7 +76,7 @@ class RedisModelTest < Test::Unit::TestCase
     context "after initialize" do 
       should "clear input arguments" do
         test_model = TestRedisModel.new(@args.merge({:foor => :bar, :not_in_fields => "foo"}))
-        assert_same_elements test_model.args, @args
+        assert_same_elements test_model.args, @args.symbolize_keys
       end
     end
     

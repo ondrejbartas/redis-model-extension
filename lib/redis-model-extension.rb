@@ -34,6 +34,8 @@ end
 
 #require all additional modules
 require 'redis-model/initialize'
+require 'redis-model/old_initialize'
+require 'redis-model/value_transform'
 require 'redis-model/redis_key'
 require 'redis-model/get_find'
 require 'redis-model/validation'

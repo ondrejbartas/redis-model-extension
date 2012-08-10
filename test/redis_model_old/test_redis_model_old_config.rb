@@ -1,8 +1,7 @@
 # -*- encoding : utf-8 -*-
 require 'helper'
-require 'redis-model/old_initialize'
 class RedisModelOldConfigTest < Test::Unit::TestCase
-  context "RedisModel old config" do
+  context "Old RedisModel config" do
     setup do
       RedisModelExtension::Database.redis.flushdb
       
@@ -81,7 +80,7 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
     context "after initialize" do 
       should "clear input arguments" do
         test_model = TestRedisModel.new(@args.merge({:foor => :bar, :not_in_fields => "foo"}))
-        assert_same_elements test_model.args, @args
+        assert_same_elements test_model.args, @args.symbolize_keys!
       end
     end
     

@@ -14,13 +14,11 @@ module RedisModel
       #is key specified directly? -> no needs of looking for other keys! -> faster
       if klass.valid_key?(args)
         if klass.exists?(args)
-          data_args = RedisModelExtension::Database.redis.hgetall(klass.generate_key(args))
-          out << klass.new(args.merge(data_args).merge({:old_args => data_args})) 
+          out << klass.new_by_key(key) 
         end
       else
         RedisModelExtension::Database.redis.keys(klass.generate_key(args)).each do |key|
-          data_args = RedisModelExtension::Database.redis.hgetall(key)
-          out << klass.new(args.merge(data_args).merge({:old_args => data_args}))
+          out << klass.new_by_key(key) 
         end
       end
       out
@@ -31,7 +29,6 @@ module RedisModel
       args.symbolize_keys!
       out = []
       klass = self.name.constantize
-      
       #is key specified directly? -> no needs of looking for other keys! -> faster
       if klass.valid_alias_key?(alias_name, args)
         out << klass.get_by_alias(alias_name, args) if klass.alias_exists?(alias_name, args)
@@ -48,8 +45,7 @@ module RedisModel
       args.symbolize_keys!
       klass = self.name.constantize
       if klass.valid_key?(args) && klass.exists?(args)
-        data_args = RedisModelExtension::Database.redis.hgetall(klass.generate_key(args))
-        klass.new(args.merge(data_args).merge({:old_args => data_args})) 
+        klass.new_by_key(klass.generate_key(args)) 
       else
         nil
       end
@@ -59,9 +55,8 @@ module RedisModel
     def get_by_redis_key(redis_key)
       if redis_key.is_a?(String) && RedisModelExtension::Database.redis.exists(redis_key)
         unless redis_key.include?("*")
-          data_args = RedisModelExtension::Database.redis.hgetall(redis_key)
           klass = self.name.constantize
-          klass.new(data_args.merge({:old_args => data_args})) 
+          klass.new_by_key(redis_key)
         else
           raise ArgumentError, "RedisKey for method get_by_redis_key can not contains '*'"
         end
@@ -77,8 +72,7 @@ module RedisModel
       if klass.valid_alias_key?(alias_name, args) && klass.alias_exists?(alias_name, args)
         key = RedisModelExtension::Database.redis.get(klass.generate_alias_key(alias_name, args))
         if RedisModelExtension::Database.redis.exists(key)
-          data_args = RedisModelExtension::Database.redis.hgetall(key)
-          klass.new(args.merge(data_args).merge({:old_args => data_args})) 
+          klass.new_by_key(key) 
         else
           nil
         end
@@ -93,8 +87,7 @@ module RedisModel
       if RedisModelExtension::Database.redis.exists(alias_key)
         key = RedisModelExtension::Database.redis.get(alias_key)
         if RedisModelExtension::Database.redis.exists(key)
-          old_args = RedisModelExtension::Database.redis.hgetall(key)
-          klass.new(old_args.merge({:old_args => old_args}))
+          klass.new_by_key(key) 
         else
           nil
         end

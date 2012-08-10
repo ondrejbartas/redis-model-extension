@@ -4,7 +4,7 @@ module RedisModel
     #Generates redis key for storing object
     def generate_key(args = {})
       out = "#{self.name.to_s.underscore.to_sym}:key"
-      @conf[:redis_key].each do |key|
+      redis_key_config.each do |key|
         if args.has_key?(key)
           out += ":#{args[key]}"
         else
@@ -17,7 +17,7 @@ module RedisModel
     #Generates redis key for storing indexes for aliases
     def generate_alias_key(alias_name, args = {})
       out = "#{self.name.to_s.underscore.to_sym}:alias:#{alias_name}"
-      @conf[:redis_aliases][alias_name.to_sym].each do |key|
+      redis_alias_config[alias_name.to_sym].each do |key|
         if args.has_key?(key)
           out += ":#{args[key]}"
         else
@@ -30,7 +30,7 @@ module RedisModel
     #Validates if key by arguments is valid
     def valid_key?(args = {})
       full_key = true
-      @conf[:redis_key].each do |key|
+      redis_key_config.each do |key|
         full_key = false if !args.has_key?(key) || args[key].nil?
       end
       full_key
@@ -39,7 +39,7 @@ module RedisModel
     #Validates if key by alias name and arguments is valid
     def valid_alias_key?(alias_name, args = {})
       full_key = true
-      @conf[:redis_aliases][alias_name.to_sym].each do |key|
+      redis_alias_config[alias_name.to_sym].each do |key|
         full_key = false if !args.has_key?(key) || args[key].nil?
       end
       full_key
@@ -60,17 +60,17 @@ module RedisModel
 
     #get redis key for instance
     def redis_key
-      self.class.generate_key(self.args)
+      self.class.generate_key(to_arg)
     end
     
     #get redis key for instance alias
     def redis_alias_key(alias_name)
-      self.class.generate_alias_key(alias_name, self.args)
+      self.class.generate_alias_key(alias_name, to_arg)
     end
   
     #if this record exists in database
     def exists?
-      RedisModelExtension::Database.redis.exists(self.class.generate_key(self.args))
+      RedisModelExtension::Database.redis.exists(self.class.generate_key(to_arg))
     end
 
   end

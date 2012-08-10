@@ -4,10 +4,8 @@ module RedisModel
     #validates required attributes
     def valid?
       @error ||= []
-      self.class.conf[:required].each do |key|
-        if !self.args.has_key?(key) || self.args[key].nil?
-          @error.push("Required #{key}")
-        end
+      redis_validation_config.each do |key|
+        @error.push("Required #{key}") unless self.send("#{key}?")
       end
       @error.size == 0
     end
@@ -16,11 +14,8 @@ module RedisModel
     def error
       @error ||= []
     end
-  
-    #return error from validation
-    def errors 
-      @error ||= []
-    end
-    
+    #always forgotting which one to use :)
+    alias :errors :error    
+
   end
 end

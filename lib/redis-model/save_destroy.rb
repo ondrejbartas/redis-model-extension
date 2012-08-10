@@ -44,16 +44,26 @@ module RedisModel
     def save
       if valid?
         #generate key (possibly new)
-        generated_key = redis_key
-        RedisModelExtension::Database.redis.rename(self.class.generate_key(self.old_args), generated_key) if self.old_args && generated_key != self.class.generate_key(self.old_args) && RedisModelExtension::Database.redis.exists(self.class.generate_key(self.old_args))
-        args = self.class.conf[:reject_nil_values] ? self.args.reject{|k,v| v.nil?} : self.args
-        RedisModelExtension::Database.redis.hmset(generated_key, *args.inject([]){ |arr,kv| arr + [kv[0], kv[1].to_s]})
+        generated_key = redis_key        
+
+        #take care about renaming saved hash in redis (if key changed)
+        if redis_old_args 
+          old_key = self.class.generate_key(redis_old_args)
+          RedisModelExtension::Database.redis.rename(old_key, generated_key) if generated_key != old_key && RedisModelExtension::Database.redis.exists(old_key)
+        end
+
+        #ignore nil values for save 
+        args = self.class.redis_save_fields_with_nil_conf ? to_arg : to_arg.reject{|k,v| v.nil?}
+
+        #perform save to redis hash
+        RedisModelExtension::Database.redis.hmset(generated_key, *args.inject([]){ |arr,kv| arr + [kv[0], kv[1]]})
         
         #destroy aliases
         destroy_aliases!
         create_aliases
-        #after save make new_key -> old_key
-        self.old_args = self.args.clone
+
+        #after save make sure instance remember old key to know if it needs to be ranamed
+        store_args
         return self
       else
         raise ArgumentError, @error.join(", ")

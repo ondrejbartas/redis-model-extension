@@ -19,11 +19,13 @@ module RedisModel
 
     #take all arguments and send them out
     def to_arg
-      self.args.inject({}) do |output, item|
-        output[item.first] = item.last.send(self.class.conf[:fields][item.first.to_sym])
-        output
+      redis_fields_config.inject({}) do |args, (key, type)|
+        args[key] = self.send(key)
+        args
       end
     end
+
+    alias :args :to_arg
     
   end
 end
