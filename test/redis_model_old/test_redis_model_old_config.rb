@@ -1,19 +1,27 @@
 # -*- encoding : utf-8 -*-
 require 'helper'
-class RedisModelTest < Test::Unit::TestCase
-  context "RedisModel" do
+require 'redis-model/old_initialize'
+class RedisModelOldConfigTest < Test::Unit::TestCase
+  context "RedisModel old config" do
     setup do
       RedisModelExtension::Database.redis.flushdb
       
       class TestRedisModel
-        include RedisModel
-        redis_field :integer, :integer
-        redis_field :boolean, :bool
-        redis_field :string, :string
-        redis_field :symbol, :symbol
-        
-        redis_validate :integer, :string 
-        redis_key :string
+        REDIS_MODEL_CONF = {
+           :fields => { 
+             :integer => :to_i,
+             :boolean => :to_bool,
+             :string => :to_s,
+             :symbol => :to_sym,
+            }, 
+            :required => [:integer, :string],
+            :redis_key => [:string],
+            :redis_aliases => {
+              :token => [:symbol]
+            }
+         }
+         include RedisModel
+         initialize_redis_model_methods REDIS_MODEL_CONF
       end
       @args = {:integer => 12345, :string => "foo", :symbol => :bar, :boolean => true}
       @test_model = TestRedisModel.new(@args)

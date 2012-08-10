@@ -32,9 +32,9 @@ module RedisModel
 end
 
 #require all additional modules
+require 'redis-model/initialize'
 require 'redis-model/redis_key'
 require 'redis-model/get_find'
 require 'redis-model/validation'
 require 'redis-model/arguments'
 require 'redis-model/save_destroy'
-require 'redis-model/old_initialize'
