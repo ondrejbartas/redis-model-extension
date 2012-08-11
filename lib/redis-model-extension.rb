@@ -31,6 +31,7 @@ module RedisModelExtension
 end
 
 #require all additional modules
+require 'redis-model-extension/config'
 require 'redis-model-extension/initialize'
 require 'redis-model-extension/old_initialize'
 require 'redis-model-extension/value_transform'

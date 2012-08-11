@@ -64,35 +64,6 @@ module RedisModelExtension
       @redis_save_fields_with_nil_conf = store
     end
 
-    #store informations about saving nil values
-    def redis_save_fields_with_nil_conf
-      @redis_save_fields_with_nil_conf.nil? ? @redis_save_fields_with_nil_conf = true : @redis_save_fields_with_nil_conf
-    end
-
-    #store informations about current class fields settings
-    def redis_fields_config
-      @redis_model_config ||= {}
-    end
-
-    #store informations about current class fields defaults settings
-    def redis_fields_defaults_config
-      @redis_model_defaults_config ||= {}
-    end
-
-    #store informations about current class redis key fields
-    def redis_key_config
-      @redis_key_config ||= []
-    end
-
-    #store informations about current class aliases settings
-    def redis_alias_config
-      @redis_alias_config ||= {}
-    end
-
-    #store informations about current class fields validation
-    def redis_validation_config
-      @redis_validation_config ||= []
-    end
   end
 
   module InstanceMethods

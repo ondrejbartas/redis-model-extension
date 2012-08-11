@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module RedisModelExtension
   module ClassMethods
     #Wrapper around find to get all instances
