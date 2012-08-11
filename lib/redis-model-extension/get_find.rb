@@ -65,7 +65,7 @@ module RedisModelExtension
       klass = self.name.constantize
       #is key specified directly? -> no needs of looking for other keys! -> faster
       if klass.valid_dynamic_key?(dynamic_alias_name, args)
-        out << klass.get_by_alias(dynamic_alias_name, args) if klass.dynamic_exists?(dynamic_alias_name, args)
+        out << klass.get_by_dynamic(dynamic_alias_name, args) if klass.dynamic_exists?(dynamic_alias_name, args)
       else
         RedisModelExtension::Database.redis.keys(klass.generate_dynamic_key(dynamic_alias_name, args)).each do |key|
           out << klass.get_by_dynamic_key(key)

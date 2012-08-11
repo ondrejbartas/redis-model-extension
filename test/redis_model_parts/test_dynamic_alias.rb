@@ -66,6 +66,7 @@ class DynamicAliasTest < Test::Unit::TestCase
       
       should "be saved and then change of variable included in key should rename it in redis!" do
         assert_equal RedisModelExtension::Database.redis.keys("*").size, 2, "on the start should be only 2 keys" #including key and alias
+        assert @dynamic_alias.dynamic_exists?(:items_with_name), "Dynamic alias should exists"
         @dynamic_alias.name = "change_of_string"
         @dynamic_alias.save
         pp RedisModelExtension::Database.redis.keys("*")
@@ -104,6 +105,10 @@ class DynamicAliasTest < Test::Unit::TestCase
       should "be find by dynamic alias" do
         @getted_models = DynamicAlias.find_by_dynamic(:items_with_name, :items => {:bar => "test"})
         assert_equal @getted_models.size, 1, "Should be only one with alias" 
+
+        @getted_models = DynamicAlias.find_by_dynamic(:items_with_name, @args)
+        assert_equal @getted_models.size, 1, "Should be find by get by alias full args" 
+        
         @getted_model = @getted_models.first
         assert_equal @getted_model.name, @dynamic_alias.name
         assert_same_elements @getted_model.items.to_json.split(","), @dynamic_alias.items.to_json.split(",")
