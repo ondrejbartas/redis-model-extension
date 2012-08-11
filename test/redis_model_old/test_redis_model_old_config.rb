@@ -174,7 +174,7 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
 
       should "have same elements after get and to_arg" do
         @getted_model = TestOldRedisModel.get(@args)
-        assert_equal @getted_model.to_arg, @args
+        assert_same_elements @getted_model.to_arg.to_json.split(","), @args.to_json.split(",")
       end
             
       context "alias" do

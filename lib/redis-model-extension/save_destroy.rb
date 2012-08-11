@@ -17,7 +17,12 @@ module RedisModelExtension
       if redis_old_args
         redis_alias_config.each do |alias_name, fields|
           if self.class.valid_alias_key?(alias_name, redis_old_args) && self.class.alias_exists?(alias_name, redis_old_args)
-            RedisModelExtension::Database.redis.del(self.class.generate_alias_key(alias_name, redis_old_args)) 
+            RedisModelExtension::Database.redis.del self.class.generate_alias_key(alias_name, redis_old_args)
+          end
+        end
+        redis_dynamic_alias_config.each do |dynamic_alias_name, config|
+          if self.class.valid_dynamic_key?(dynamic_alias_name, redis_old_args) && self.class.dynamic_exists?(dynamic_alias_name, redis_old_args)
+            RedisModelExtension::Database.redis.del self.class.generate_dynamic_key(dynamic_alias_name, redis_old_args)
           end
         end
       end
@@ -27,7 +32,10 @@ module RedisModelExtension
     def create_aliases
       main_key = redis_key
       redis_alias_config.each do |alias_name, fields|
-        RedisModelExtension::Database.redis.set(self.class.generate_alias_key(alias_name, self.args), main_key) if self.class.valid_alias_key?(alias_name, self.args)
+        RedisModelExtension::Database.redis.set(redis_alias_key(alias_name), main_key) if valid_alias_key? alias_name
+      end
+      redis_dynamic_alias_config.each do |dynamic_alias_name, config|
+        RedisModelExtension::Database.redis.set(redis_dynamic_key(dynamic_alias_name), main_key) if valid_dynamic_key? dynamic_alias_name
       end
     end
   

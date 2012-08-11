@@ -27,6 +27,11 @@ module RedisModelExtension
       @redis_alias_config ||= {}
     end
 
+    #store informations about current class dynamic alias settings
+    def redis_dynamic_alias_config
+      @redis_dynamic_alias_config ||={}
+    end
+
     #store informations about current class fields validation
     def redis_validation_config
       @redis_validation_config ||= []
@@ -52,6 +57,11 @@ module RedisModelExtension
         self.class.redis_alias_config
       end
 
+      # pointer to class settings
+      def redis_dynamic_alias_config
+        self.class.redis_dynamic_alias_config
+      end
+      
       # pointer to class settings
       def redis_validation_config
         self.class.redis_validation_config

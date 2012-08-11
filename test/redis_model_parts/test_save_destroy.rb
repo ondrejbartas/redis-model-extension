@@ -26,7 +26,8 @@ class SaveDestroyTest < Test::Unit::TestCase
       
       should "be saved and then change of variable included in key should rename it in redis!" do
         assert_equal RedisModelExtension::Database.redis.keys("*").size, 2 #including key and alias
-        @test_model.string = "change_of_strging"
+        @test_model.symbol = :changed_symbol
+        @test_model.string = "change_of_string"
         @test_model.save
         assert_equal RedisModelExtension::Database.redis.keys("*").size, 2 #including key and alias
       end
@@ -41,8 +42,7 @@ class SaveDestroyTest < Test::Unit::TestCase
 
       should "have same elements after get and to_arg" do
         @getted_model = TestRedisModel.get(@args)
-        assert_same_elements @getted_model.to_arg.keys, @args.keys
-        assert_equal @getted_model.to_arg.values.collect{|a| a.to_s}.sort.join(","), @args.values.collect{|a| a.to_s}.sort.join(",")
+        assert_same_elements @getted_model.to_arg.to_json.split(","), @args.to_json.split(",")
       end
 
     end
