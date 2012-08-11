@@ -5,7 +5,7 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
     setup do
       RedisModelExtension::Database.redis.flushdb
       
-      class TestRedisModel
+      class TestOldRedisModel
         REDIS_MODEL_CONF = {
            :fields => { 
              :integer => :to_i,
@@ -19,16 +19,21 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
             :redis_key => [:string],
             :redis_aliases => {
               :token => [:symbol]
-            }
+            },
+            :reject_nil_values => true,
          }
          include RedisModel
          initialize_redis_model_methods REDIS_MODEL_CONF
       end
       @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true, :array => [1,2,3], :hash => {"foo"=>"bar", "test" => 2}}
-      @test_model = TestRedisModel.new(@args)
-      @test_model_partial = TestRedisModel.new(:integer => 12345, :string => "foo")
+      @test_model = TestOldRedisModel.new(@args)
+      @test_model_partial = TestOldRedisModel.new(:integer => 12345, :string => "foo")
     end 
     
+    should "have same configuration" do
+      assert_equal TestOldRedisModel.conf, TestOldRedisModel::REDIS_MODEL_CONF, "Same configuration"
+    end
+
     context "define methods" do
       should "be accessible" do
         assert @test_model.respond_to?(:integer)
@@ -80,18 +85,18 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
          
     context "redis key" do
       should "generate right key" do
-        assert_equal @test_model.redis_key, "#{TestRedisModel.to_s.underscore}:key:foo"
-        assert_equal TestRedisModel.generate_key(@args), "#{TestRedisModel.to_s.underscore}:key:foo"
+        assert_equal @test_model.redis_key, "#{TestOldRedisModel.to_s.underscore}:key:foo"
+        assert_equal TestOldRedisModel.generate_key(@args), "#{TestOldRedisModel.to_s.underscore}:key:foo"
       end  
       should "generate right key alias" do
-        assert_equal @test_model.redis_alias_key(:token), "#{TestRedisModel.to_s.underscore}:alias:token:bar"
-        assert_equal TestRedisModel.generate_alias_key(:token, @args), "#{TestRedisModel.to_s.underscore}:alias:token:bar"
+        assert_equal @test_model.redis_alias_key(:token), "#{TestOldRedisModel.to_s.underscore}:alias:token:bar"
+        assert_equal TestOldRedisModel.generate_alias_key(:token, @args), "#{TestOldRedisModel.to_s.underscore}:alias:token:bar"
       end  
     end
     
     context "after initialize" do 
       should "clear input arguments" do
-        test_model = TestRedisModel.new(@args.merge({:foor => :bar, :not_in_fields => "foo"}))
+        test_model = TestOldRedisModel.new(@args.merge({:foor => :bar, :not_in_fields => "foo"}))
         assert_same_elements test_model.args, @args.symbolize_keys!
       end
     end
@@ -99,13 +104,13 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
     context "validation" do
 
       should "return errors after valid?" do
-        test = TestRedisModel.new()
+        test = TestOldRedisModel.new()
         assert !test.valid?, "shouldn't be valid"
         assert_equal test.errors.size, 2, "should have 2 errors (2 required fields)" 
       end
 
       should "be able to add custom error (ex. in initialize)" do
-        test = TestRedisModel.new()
+        test = TestOldRedisModel.new()
         test.error << "my custom error"
         assert !test.valid?, "shouldn't be valid"
         assert_equal test.errors.size, 3, "should have 3 errors (2 required fields + 1 custom error)" 
@@ -113,11 +118,11 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
       end
 
       should "not raise exeption on invalid initialize" do
-        assert_nothing_raised { TestRedisModel.new() }
+        assert_nothing_raised { TestOldRedisModel.new() }
       end
 
       should "raise exeption on save" do
-        test_model = TestRedisModel.new()
+        test_model = TestOldRedisModel.new()
         assert_raises ArgumentError do
           test_model.save
         end
@@ -160,7 +165,7 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
       end
 
       should "have same elements after get" do
-        @getted_model = TestRedisModel.get(@args)
+        @getted_model = TestOldRedisModel.get(@args)
         assert_equal @getted_model.integer, @test_model.integer
         assert_equal @getted_model.string, @test_model.string
         assert_equal @getted_model.symbol, @test_model.symbol
@@ -168,13 +173,13 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
       end
 
       should "have same elements after get and to_arg" do
-        @getted_model = TestRedisModel.get(@args)
+        @getted_model = TestOldRedisModel.get(@args)
         assert_equal @getted_model.to_arg, @args
       end
             
       context "alias" do
         should "be getted by alias" do
-          @getted_model = TestRedisModel.get_by_alias(:token ,@args)
+          @getted_model = TestOldRedisModel.get_by_alias(:token ,@args)
           assert_equal @getted_model.integer, @test_model.integer
           assert_equal @getted_model.string, @test_model.string
           assert_equal @getted_model.symbol, @test_model.symbol
@@ -182,17 +187,17 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
         end
         
         should "be getted after change in alias" do
-          getted_model = TestRedisModel.get_by_alias(:token ,@args)
+          getted_model = TestOldRedisModel.get_by_alias(:token ,@args)
           getted_model.symbol = "Test_token"
           getted_model.save
-          assert_equal getted_model.integer, TestRedisModel.get_by_alias(:token ,:symbol => "Test_token").integer
+          assert_equal getted_model.integer, TestOldRedisModel.get_by_alias(:token ,:symbol => "Test_token").integer
         end
       end
     end
     
     context "without rejected nil values on save" do
-      should "save nil values" do
-        class NilTestRedisModel
+      setup do
+        class NilTestOldRedisModel
           REDIS_MODEL_CONF = {
              :fields => { 
                :integer => :to_i,
@@ -206,16 +211,18 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
            include RedisModel
            initialize_redis_model_methods REDIS_MODEL_CONF
         end
-        args = {integer: 100, string: "test"}
-        nil_test_model = NilTestRedisModel.new(args)
+        @args = {integer: 100, string: "test"}
+        @nil_test_model = NilTestOldRedisModel.new(@args)
+      end
 
+      should "save nil values" do
         #on initialize
-        assert_equal nil_test_model.integer, 100
-        assert_equal nil_test_model.string, "test"
-        nil_test_model.save
+        assert_equal @nil_test_model.integer, 100
+        assert_equal @nil_test_model.string, "test"
+        @nil_test_model.save
 
         #after find
-        founded = NilTestRedisModel.get(args)
+        founded = NilTestOldRedisModel.get(@args)
         assert_equal founded.integer, 100
         assert_equal founded.string, "test"
 
@@ -226,9 +233,14 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
         founded.save
 
         #after second find
-        founded = NilTestRedisModel.get(args)
+        founded = NilTestOldRedisModel.get(@args)
         assert_equal founded.integer, nil
         assert_equal founded.string, "test"
+
+      end
+
+      should "have same configuration" do
+        assert_equal NilTestOldRedisModel.conf, NilTestOldRedisModel::REDIS_MODEL_CONF, "Same configuration"
       end
     end
   end

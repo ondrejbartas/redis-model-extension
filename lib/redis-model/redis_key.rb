@@ -5,7 +5,7 @@ module RedisModel
     def generate_key(args = {})
       out = "#{self.name.to_s.underscore.to_sym}:key"
       redis_key_config.each do |key|
-        if args.has_key?(key)
+        if args.has_key?(key) && !args[key].nil?
           out += ":#{args[key]}"
         else
           out += ":*"
@@ -18,7 +18,7 @@ module RedisModel
     def generate_alias_key(alias_name, args = {})
       out = "#{self.name.to_s.underscore.to_sym}:alias:#{alias_name}"
       redis_alias_config[alias_name.to_sym].each do |key|
-        if args.has_key?(key)
+        if args.has_key?(key) && !args[key].nil?
           out += ":#{args[key]}"
         else
           out += ":*"

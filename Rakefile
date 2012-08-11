@@ -58,12 +58,6 @@ task :startup => [:'redis:start']
 desc "Teardown databases"
 task :teardown => [:'redis:stop']
 
-Rake::TestTask.new(:test) do |t|
-  t.test_files = FileList['test/functional/*_test.rb', 'test/unit/*_test.rb','test/integration/*_test.rb']
-  t.warning = false
-  t.verbose = false
-end
-
 namespace :redis do
   desc "Start the Redis server"
   task :start do

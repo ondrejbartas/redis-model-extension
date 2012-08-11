@@ -13,10 +13,10 @@ module RedisModel
     #remove all aliases
     def destroy_aliases!
       #do it only if it is existing object!
-      if self.old_args
-        self.class.conf[:redis_aliases].each do |alias_name, fields|
-          if self.class.valid_alias_key?(alias_name, self.old_args) && self.class.alias_exists?(alias_name, self.old_args)
-            RedisModelExtension::Database.redis.del(self.class.generate_alias_key(alias_name, self.old_args)) 
+      if redis_old_args
+        redis_alias_config.each do |alias_name, fields|
+          if self.class.valid_alias_key?(alias_name, redis_old_args) && self.class.alias_exists?(alias_name, redis_old_args)
+            RedisModelExtension::Database.redis.del(self.class.generate_alias_key(alias_name, redis_old_args)) 
           end
         end
       end
@@ -25,7 +25,7 @@ module RedisModel
     #Method for creating aliases
     def create_aliases
       main_key = redis_key
-      self.class.conf[:redis_aliases].each do |alias_name, fields|
+      redis_alias_config.each do |alias_name, fields|
         RedisModelExtension::Database.redis.set(self.class.generate_alias_key(alias_name, self.args), main_key) if self.class.valid_alias_key?(alias_name, self.args)
       end
     end

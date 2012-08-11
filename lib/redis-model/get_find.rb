@@ -14,7 +14,7 @@ module RedisModel
       #is key specified directly? -> no needs of looking for other keys! -> faster
       if klass.valid_key?(args)
         if klass.exists?(args)
-          out << klass.new_by_key(key) 
+          out << klass.new_by_key(klass.generate_key(args)) 
         end
       else
         RedisModelExtension::Database.redis.keys(klass.generate_key(args)).each do |key|
@@ -54,12 +54,8 @@ module RedisModel
     #if you know redis key and would like to get object
     def get_by_redis_key(redis_key)
       if redis_key.is_a?(String) && RedisModelExtension::Database.redis.exists(redis_key)
-        unless redis_key.include?("*")
-          klass = self.name.constantize
-          klass.new_by_key(redis_key)
-        else
-          raise ArgumentError, "RedisKey for method get_by_redis_key can not contains '*'"
-        end
+        klass = self.name.constantize
+        klass.new_by_key(redis_key)
       else
         nil
       end

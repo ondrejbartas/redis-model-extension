@@ -25,3 +25,23 @@ require 'shoulda-context'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'redis-model-extension'
+
+
+class TestRedisModel
+  include RedisModel
+  redis_field :integer, :integer
+  redis_field :boolean, :bool
+  redis_field :string,  :string
+  redis_field :symbol,  :symbol, :default
+  redis_field :array,   :array
+  redis_field :hash,    :hash
+  redis_field :time,    :time
+  redis_field :date,    :date
+  redis_field :float,   :float
+  
+  redis_validate :integer, :string 
+  redis_key :string
+
+  redis_alias :token, [:symbol]
+
+end

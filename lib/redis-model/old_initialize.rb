@@ -48,6 +48,7 @@ module RedisModel
         required: redis_validation_config,
         redis_key: redis_key_config,
         redis_aliases: redis_alias_config,
+        reject_nil_values: !redis_save_fields_with_nil_conf,
       }
     end
    
