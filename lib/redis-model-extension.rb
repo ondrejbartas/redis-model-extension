@@ -40,6 +40,7 @@ require 'redis-model-extension/get_find'
 require 'redis-model-extension/validation'
 require 'redis-model-extension/arguments'
 require 'redis-model-extension/save_destroy'
+require 'redis-model-extension/changed_redis_key'
 
 #bad naming in past, will be removed
 require 'redis-model'

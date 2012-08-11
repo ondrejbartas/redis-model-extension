@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module RedisModelExtension
   module ClassMethods
 
@@ -84,59 +85,22 @@ module RedisModelExtension
       return self
     end
 
-    # store old arguments, need's to be called in find/get initialization
-    # will remember old arguments and remember redis keys
-    # if some fileds in redis key will change, then do rename
-    # without this you can end up with old and new saved object!
-    def store_args
-      set_redis_old_args @redis_args.clone      
-    end
-
     private 
 
-      # get value from instance variable
-      def value_get name
-        if @redis_args && @redis_args.has_key?(name.to_sym)
-          @redis_args[name.to_sym]
-        else
-          nil
-        end
+    # get value from instance variable
+    def value_get name
+      if @redis_args && @redis_args.has_key?(name.to_sym)
+        @redis_args[name.to_sym]
+      else
+        nil
       end
+    end
 
-      # set value into instance variable
-      def value_set name, value
-        @redis_args ||= {}
-        @redis_args[name.to_sym] = value
-      end
+    # set value into instance variable
+    def value_set name, value
+      @redis_args ||= {}
+      @redis_args[name.to_sym] = value
+    end
 
-      # get old arguments
-      def set_redis_old_args old_args
-        @redis_old_args = old_args
-      end
-
-      # get old arguments
-      def redis_old_args
-        @redis_old_args ||= {}
-      end
-
-      # pointer to class settings
-      def redis_fields_config
-        self.class.redis_fields_config
-      end
-
-      # pointer to class settings
-      def redis_fields_defaults_config
-        self.class.redis_fields_defaults_config
-      end
-
-      # pointer to class settings
-      def redis_alias_config
-        self.class.redis_alias_config
-      end
-
-      # pointer to class settings
-      def redis_validation_config
-        self.class.redis_validation_config
-      end
   end
 end
