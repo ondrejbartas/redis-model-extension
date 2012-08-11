@@ -2,15 +2,6 @@
 module RedisModelExtension
   module ClassMethods
 
-    # read all data from redis and create new instance
-    def new_by_key(key)
-      args = HashWithIndifferentAccess.new(RedisModelExtension::Database.redis.hgetall(key))
-
-      new_instance = self.name.constantize.new(args)
-      new_instance.store_args
-
-      return new_instance
-    end
 
     #add new field which will be saved into redis
     # * name - name of your variable
@@ -83,23 +74,6 @@ module RedisModelExtension
       end
 
       return self
-    end
-
-    private 
-
-    # get value from instance variable
-    def value_get name
-      if @redis_args && @redis_args.has_key?(name.to_sym)
-        @redis_args[name.to_sym]
-      else
-        nil
-      end
-    end
-
-    # set value into instance variable
-    def value_set name, value
-      @redis_args ||= {}
-      @redis_args[name.to_sym] = value
     end
 
   end

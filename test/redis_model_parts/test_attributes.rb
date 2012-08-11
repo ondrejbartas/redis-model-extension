@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 require 'helper'
-class ArgumentsTest < Test::Unit::TestCase
-  context "Arguments" do
+class AttributesTest < Test::Unit::TestCase
+  context "Attributes" do
     setup do
       @time = Time.now
       @args = {
