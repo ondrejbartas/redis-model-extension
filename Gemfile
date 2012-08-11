@@ -10,8 +10,7 @@ group :development do
   gem "simplecov", "~> 0.6.4"
   gem "rake"
   gem "rack"
-  gem "rdoc", "~> 3.12"
-  gem "rdoc-generator-fivefish"
+  gem "sdoc" # sdoc -N .
   gem "bundler"
   gem "jeweler", "~> 1.8.3"
   gem "turn", "~> 0.8.2"
