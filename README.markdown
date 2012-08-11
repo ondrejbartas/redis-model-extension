@@ -74,8 +74,16 @@ class TestRedisModel
   redis_key :field1, :field2
 
   #OPTIONALS:
+
   # redis_validate :field1, :field2... #test your model, if all specified variables are not nil
   redis_validate :field1, :field3 
+
+  # reddis_key_normalize - when assembling redis key you can specify normalization actions for values
+  # :downcase - your_class:key:Value:FoO -> your_class:key:value:foo (find - case insensitive)
+  # :transliterate - your_class:key:VašíČek:FoO -> your_class:key:VasiCek:FoO (find - without á,č etc.)
+  # :downcase & :transliterate - your_class:key:VašíČek:FoO -> your_class:key:vasicek:foo
+  # this is crucial for find method
+  reddis_key_normalize :transliterate, :downcase
 
   # redis alias is working as redis key, but it will only create alias to your main hash in redis
   # specified is by combination of uniq value (you specify which fields to use)

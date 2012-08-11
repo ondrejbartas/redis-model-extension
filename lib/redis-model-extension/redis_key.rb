@@ -5,13 +5,13 @@ module RedisModelExtension
     # Generates redis key for storing object
     # * will produce something like: your_class:key:field_value1:field_value2... 
     # (depending on your redis_key setting)
+    def generate_key args = {}
+      #normalize input hash of arguments
+      args = HashWithIndifferentAccess.new(args)
+
       out = "#{self.name.to_s.underscore.to_sym}:key"
       redis_key_config.each do |key|
-        if args.has_key?(key) && !args[key].nil?
-          out += ":#{args[key]}"
-        else
-          out += ":*"
-        end
+        out += add_item_to_redis_key args, key
       end
       out
     end
@@ -19,19 +19,23 @@ module RedisModelExtension
     # Generates redis key for storing indexes for aliases
     # * will produce something like: your_class:alias:name_of_your_alias:field_value1:field_value2... 
     # (depending on your redis_alias setting)
+    def generate_alias_key alias_name, args = {}
+      #normalize input hash of arguments
+      args = HashWithIndifferentAccess.new(args)
+
       out = "#{self.name.to_s.underscore.to_sym}:alias:#{alias_name}"
       redis_alias_config[alias_name.to_sym].each do |key|
-        if args.has_key?(key) && !args[key].nil?
-          out += ":#{args[key]}"
-        else
-          out += ":*"
-        end
+        out += add_item_to_redis_key args, key
       end
       out
     end
     
     # Validates if key by arguments is valid
     # (all needed fields are not nil!)
+    def valid_key? args = {}
+      #normalize input hash of arguments
+      args = HashWithIndifferentAccess.new(args)
+
       full_key = true
       redis_key_config.each do |key|
         full_key = false if !args.has_key?(key) || args[key].nil?
@@ -41,6 +45,10 @@ module RedisModelExtension
 
     # Validates if key by alias name and arguments is valid
     # (all needed fields are not nil!)
+    def valid_alias_key? alias_name, args = {}
+      #normalize input hash of arguments
+      args = HashWithIndifferentAccess.new(args)
+
       full_key = true
       redis_alias_config[alias_name.to_sym].each do |key|
         full_key = false if !args.has_key?(key) || args[key].nil?
@@ -57,6 +65,22 @@ module RedisModelExtension
     def alias_exists? alias_name, args = {}
       RedisModelExtension::Database.redis.exists(self.name.constantize.generate_alias_key(alias_name, args))
     end
+
+    private
+
+    # return one item of redis key (will decide to input value or to add * for search)
+    def add_item_to_redis_key args, key
+      pp "add item #{redis_key_normalize_conf}"
+      if args.has_key?(key) && !args[key].nil?
+        key = ":#{args[key]}"
+        key = key.mb_chars.downcase if redis_key_normalize_conf.include?(:downcase)
+        key = ActiveSupport::Inflector::transliterate(key) if redis_key_normalize_conf.include?(:transliterate)
+        key 
+      else
+        ":*"
+      end
+    end
+
   end
     
   module InstanceMethods

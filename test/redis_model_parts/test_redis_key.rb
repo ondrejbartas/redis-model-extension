@@ -34,5 +34,53 @@ class RedisKeyTest < Test::Unit::TestCase
       assert_equal @test_model.redis_alias_key(:token), "#{TestRedisModel.to_s.underscore}:alias:token:bar"
       assert_equal TestRedisModel.generate_alias_key(:token, @args), "#{TestRedisModel.to_s.underscore}:alias:token:bar"
     end  
+
+    context "normalization" do
+      should "downcase" do
+        class DowncaseRedisModel
+          include RedisModelExtension
+          redis_field :string,  :string
+          redis_key :string
+          redis_key_normalize :downcase
+        end
+        model = DowncaseRedisModel.new(:string => "FoO")
+        assert_equal model.redis_key, "#{DowncaseRedisModel.to_s.underscore}:key:foo"
+      end
+
+      should "transliterate" do
+        class TransliterateRedisModel
+          include RedisModelExtension
+          redis_field :string,  :string
+          redis_key :string
+          redis_key_normalize :transliterate
+        end
+        model = TransliterateRedisModel.new(:string => "FoOšČ")
+        assert_equal model.redis_key, "#{TransliterateRedisModel.to_s.underscore}:key:FoOsC"
+      end
+
+      should "downcase & transliterate" do
+        class DowncaseTransliterateRedisModel
+          include RedisModelExtension
+          redis_field :string,  :string
+          redis_key :string
+          redis_key_normalize :transliterate
+          redis_key_normalize :downcase
+        end
+        model = DowncaseTransliterateRedisModel.new(:string => "FoOšČ")
+        assert_equal model.redis_key, "#{DowncaseTransliterateRedisModel.to_s.underscore}:key:foosc"
+      end
+
+      should "downcase & transliterate in one setting" do
+        class DowncaseTransliterateOneRedisModel
+          include RedisModelExtension
+          redis_field :string,  :string
+          redis_key :string
+          redis_key_normalize :transliterate, :downcase
+        end
+        model = DowncaseTransliterateOneRedisModel.new(:string => "FoOšČ")
+        assert_equal model.redis_key, "#{DowncaseTransliterateOneRedisModel.to_s.underscore}:key:foosc"
+      end
+
+    end
   end
 end

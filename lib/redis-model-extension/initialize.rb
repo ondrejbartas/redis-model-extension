@@ -2,6 +2,7 @@
 module RedisModelExtension
   module ClassMethods
 
+    VALID_NORMALIZATIONS = [:downcase, :transliterate]
 
     #add new field which will be saved into redis
     # * name - name of your variable
@@ -43,6 +44,16 @@ module RedisModelExtension
       @redis_validation_config ||= []
       @redis_validation_config |= fields
     end
+    
+    # set redis model to normalize redis keys
+    def redis_key_normalize *metrics
+      pp metrics
+      @redis_key_normalize_conf ||= []
+      metrics.each do |metric|
+        raise ArgumentError, "Please provide valid normalization: #{VALID_NORMALIZATIONS.join(", ")}" unless VALID_NORMALIZATIONS.include?(metric)
+        @redis_key_normalize_conf << metric
+      end
+    end
 
     # set fields which will must be valid before save
     def redis_validate *fields
@@ -57,8 +68,14 @@ module RedisModelExtension
     end
 
     #store informations about saving nil values
+    # store informations about saving nil values
     def redis_save_fields_with_nil store
       @redis_save_fields_with_nil_conf = store
+    end
+
+    # store informations about redis key normalization
+    def redis_key_normalize_conf
+      @redis_key_normalize_conf ||= []
     end
 
   end
