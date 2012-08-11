@@ -38,6 +38,8 @@ pkg
 #*.tmproj
 #tmtags
 
+tmp
+
 # For emacs:
 #*~
 #\#*
