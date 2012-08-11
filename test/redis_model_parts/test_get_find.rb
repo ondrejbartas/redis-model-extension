@@ -53,6 +53,10 @@ class GetFindTest < Test::Unit::TestCase
     end
 
     context "alias" do
+      should "exists" do
+        assert @test_model.alias_exists?(:token)
+      end
+
       should "be getted by alias" do
         @getted_model = TestRedisModel.get_by_alias(:token, @args)
         assert_equal @getted_model.integer, @test_model.integer
