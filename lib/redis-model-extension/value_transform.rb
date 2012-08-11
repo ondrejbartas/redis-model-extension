@@ -1,6 +1,8 @@
+# -*- encoding : utf-8 -*-
 module RedisModelExtension
   module InstanceMethods
 
+    # choose right type of value and then transform it for redis
     def value_to_redis name, value
       if redis_fields_config.has_key?(name)
         value_transform value, redis_fields_config[name]
@@ -9,6 +11,7 @@ module RedisModelExtension
       end
     end
 
+    # convert value for valid format which can be saved in redis
     def value_transform value, type
       return nil if value.nil? || value.to_s.size == 0
       case type
@@ -25,6 +28,7 @@ module RedisModelExtension
       end
     end
 
+    # convert value from redis into valid format in ruby
     def value_parse value, type
       return nil if value.nil? || value.to_s.size == 0
       case type

@@ -1,7 +1,8 @@
+# -*- encoding : utf-8 -*-
 module RedisModelExtension
   module InstanceMethods
 
-    #validates required attributes
+    # validates required attributes
     def valid?
       @error ||= []
       redis_validation_config.each do |key|
@@ -14,6 +15,7 @@ module RedisModelExtension
     def error
       @error ||= []
     end
+    
     #always forgotting which one to use :)
     alias :errors :error    
 

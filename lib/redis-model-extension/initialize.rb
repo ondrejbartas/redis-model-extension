@@ -6,46 +6,51 @@ module RedisModelExtension
     #add new field which will be saved into redis
     # * name - name of your variable
     # * type - type of your variable (:integer, :float, :string, :array, :hash)
-    # * default - default value of your variable
+    # * (default) - default value of your variable
     def redis_field name, type, default = nil
 
+      # remember field to save into redis
       redis_fields_config[name] = type
+      # remember field default value
       redis_fields_defaults_config[name] = default
 
-      #get value
+      # get value
       define_method name do
         value_get name  
       end
 
-      #assign new value
+      # assign new value
       define_method "#{name}=" do |new_value|
         value_set name, new_value
       end
 
-      #does value exists?
+      # value exists? (not nil and not blank?)
       define_method "#{name}?" do 
         value_get(name) && !value_get(name).blank? ? true : false
       end
 
+      # default saving nil values to redis
       redis_save_fields_with_nil true
     end
 
-    #set redis key which will be used for storing model
+    # set redis key which will be used for storing model
     def redis_key *fields
       @redis_key_config = fields
 
-      #automaticaly add all fields from key to validation
-      #diable invalid keys to be saved
+      # automaticaly add all fields from key to validation
+      # if any of fields in redis key is nil
+      # then prevent to save it
       @redis_validation_config ||= []
       @redis_validation_config |= fields
     end
 
-    #set fields which will must be valid before save
+    # set fields which will must be valid before save
     def redis_validate *fields
       @redis_validation_config ||= []
       @redis_validation_config |= fields
     end
 
+    # store informations about redis aliases
     def redis_alias name, fields
       @redis_alias_config ||= {}
       @redis_alias_config[name] = fields

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module RedisModelExtension
   module InstanceMethods
 
@@ -10,7 +11,7 @@ module RedisModelExtension
       end
     end
 
-    #remove all aliases
+    # remove all aliases
     def destroy_aliases!
       #do it only if it is existing object!
       if redis_old_args
@@ -22,7 +23,7 @@ module RedisModelExtension
       end
     end
     
-    #Method for creating aliases
+    # create aliases (create key value [STRING] key is alias redis key and value is redis key)
     def create_aliases
       main_key = redis_key
       redis_alias_config.each do |alias_name, fields|
@@ -30,7 +31,7 @@ module RedisModelExtension
       end
     end
   
-    #update multiple attrubutes at once
+    # update multiple attrubutes at once
     def update args
       args.each do |key, value|
         method = "#{key}=".to_sym 
@@ -40,8 +41,9 @@ module RedisModelExtension
       end
     end
 
-    #save method
+    # save method - save all attributes (fields) and create aliases
     def save
+      # can be saved into redis?
       if valid?
         #generate key (possibly new)
         generated_key = redis_key        

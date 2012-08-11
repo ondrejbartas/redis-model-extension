@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module RedisModelExtension
   TYPE_TRANSLATIONS = { 
     :integer => :to_i, 
@@ -12,6 +13,27 @@ module RedisModelExtension
 
   module ClassMethods
 
+    # old method to initialize redis model extenstion
+    # Usage:
+    #  REDIS_MODEL_CONF = {
+    #   :fields => { 
+    #     :integer => :to_i,
+    #     :boolean => :to_bool,
+    #     :string => :to_s,
+    #     :symbol => :to_sym,
+    #    }, 
+    #    :required => [:integer, :string],
+    #    :redis_key => [:string, :symbol],
+    #    :redis_aliases => {
+    #      :token => [:symbol]
+    #    },
+    #    # (default is true) if true all nil values will not be saved into redis,
+    #    # there should be problem when you want to set some value to nil and same
+    #    # it will not be saved (use false to prevent this)
+    #    :reject_nil_values => false 
+    # }
+    # include RedisModel
+    # initialize_redis_model_methods REDIS_MODEL_CONF
     def initialize_redis_model_methods conf
       @conf = {:reject_nil_values => true}.merge(conf)
       #take all fields and make methods for them
@@ -19,25 +41,36 @@ module RedisModelExtension
         redis_fields_config[name] = RedisModelExtension::TYPE_TRANSLATIONS.invert[action]
         redis_fields_defaults_config[name] = nil
 
+        # define getter method for field
         define_method "#{name}" do
           value_get name
         end
         
+        # define setter method for field
         define_method "#{name}=" do |new_value|
           value_set name, new_value
         end
         
+        # define exists? method for field
         define_method "#{name}?" do
           value_get(name) && !value_get(name).blank? ? true : false
         end
       end
       
+      # save nil values?
       redis_save_fields_with_nil false if !conf.has_key?(:reject_nil_values) || conf[:reject_nil_values] == true
+
+      # save into class config about redis key
       @redis_key_config = conf[:redis_key]
+
+      # save into class config about fileds validation
       @redis_validation_config = conf[:required]
+
+      # save into class config about redis keys
       @redis_alias_config = conf[:redis_aliases]
     end
     
+    # get config hash
     def conf
       fields = {}
       redis_fields_config.each do |key, type|
