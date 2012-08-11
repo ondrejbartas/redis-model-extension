@@ -53,6 +53,9 @@ module RedisModelExtension
     def save
       # can be saved into redis?
       if valid?
+        #autoicrement id
+        self.send("id=", autoincrement_id) if redis_key_config.include?(:id) && !self.id?
+
         #generate key (possibly new)
         generated_key = redis_key        
 

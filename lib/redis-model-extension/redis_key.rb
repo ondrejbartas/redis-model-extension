@@ -5,15 +5,19 @@ module RedisModelExtension
     # Generates redis key for storing object
     # * will produce something like: your_class:key:field_value1:field_value2... 
     # (depending on your redis_key setting)
-    def generate_key args = {}
+    def generate_key args = {}, key = "key"
       #normalize input hash of arguments
       args = HashWithIndifferentAccess.new(args)
 
-      out = "#{self.name.to_s.underscore.to_sym}:key"
+      out = "#{self.name.to_s.underscore.to_sym}:#{key}"
       redis_key_config.each do |key|
         out += add_item_to_redis_key args, key
       end
       out
+    end
+
+    def autoincrement_key
+      "#{self.name.to_s.underscore.to_sym}:autoincrement_id"
     end
     
     # Generates redis key for storing indexes for aliases

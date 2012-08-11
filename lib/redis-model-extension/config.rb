@@ -36,11 +36,24 @@ module RedisModelExtension
     def redis_validation_config
       @redis_validation_config ||= []
     end
+
+    private
+
+    #store informations about all user defined fields settings
+    def redis_user_field_config
+      @redis_user_field_config ||= []
+    end
+
   end
 
   module InstanceMethods
 
     private 
+
+      # pointer to class settings
+      def redis_key_config
+        self.class.redis_key_config
+      end
 
       # pointer to class settings
       def redis_fields_config

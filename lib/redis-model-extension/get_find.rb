@@ -12,7 +12,11 @@ module RedisModelExtension
     end
 
     #Find method for searching in redis
+    # * args (Integer) - search by id
+    # * args (Hash) - search by arguments in redis_key
     def find(args = {})
+      # when argument is integer - search by id 
+      args = { id: args } if args.is_a?(Integer)
       #normalize input hash of arguments
       args = HashWithIndifferentAccess.new(args)
 
@@ -79,7 +83,12 @@ module RedisModelExtension
     ######################################
 
     #fastest method to get object from redis by getting it by arguments
+    # * args (Integer) - search by id
+    # * args (Hash) - search by arguments in redis_key
     def get(args = {})
+      # when argument is integer - search by id 
+      args = { id: args } if args.is_a?(Integer)
+
       #normalize input hash of arguments
       args = HashWithIndifferentAccess.new(args)
 

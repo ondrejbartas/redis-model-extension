@@ -41,6 +41,6 @@ require 'redis-model-extension/validation'
 require 'redis-model-extension/attributes'
 require 'redis-model-extension/save_destroy'
 require 'redis-model-extension/changed_redis_key'
-
+require 'redis-model-extension/autoincrement_id'
 #bad naming in past, will be removed
 require 'redis-model'

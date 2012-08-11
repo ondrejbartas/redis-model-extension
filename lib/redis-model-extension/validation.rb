@@ -60,7 +60,7 @@ module RedisModelExtension
 
     # validate one item of redis key
     def valid_item_for_redis_key? args, key
-      args.has_key?(key) && !args[key].nil?
+      (args.has_key?(key) && !args[key].nil?) || redis_fields_config[key] == :autoincrement
     end
 
     private 
@@ -96,7 +96,7 @@ module RedisModelExtension
     def valid?
       @error ||= []
       redis_validation_config.each do |key|
-        @error.push("Required #{key}") unless self.send("#{key}?")
+        @error.push("Required #{key}") unless self.send("#{key}?") || redis_fields_config[key] == :autoincrement
       end
       @error.size == 0
     end

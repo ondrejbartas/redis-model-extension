@@ -16,6 +16,7 @@ module RedisModelExtension
       return nil if value.nil? || value.to_s.size == 0
       case type
       when :integer then value.to_i
+      when :autoincrement then value.to_i
       when :string then value.to_s
       when :float then value.to_f
       when :bool then value.to_s
@@ -33,6 +34,7 @@ module RedisModelExtension
       return nil if value.nil? || value.to_s.size == 0
       case type
       when :integer then value.to_i
+      when :autoincrement then value.to_i
       when :string then value.to_s
       when :float then value.to_f
       when :bool then value.to_s.to_bool

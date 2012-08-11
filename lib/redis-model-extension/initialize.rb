@@ -9,6 +9,7 @@ module RedisModelExtension
     # * type - type of your variable (:integer, :float, :string, :array, :hash)
     # * (default) - default value of your variable
     def redis_field name, type, default = nil
+      redis_user_field_config << name
 
       # remember field to save into redis
       redis_fields_config[name] = type
@@ -32,19 +33,64 @@ module RedisModelExtension
 
       # default saving nil values to redis
       redis_save_fields_with_nil true
+
+      #set default key to autoincrement id
+      set_redis_autoincrement_key
     end
+
+    def set_redis_autoincrement_key
+      @redis_key_config = [:id]
+
+      # get value
+      define_method :id do
+        value_get :id 
+      end
+
+      # value exists? (not nil and not blank?)
+      define_method "id?" do 
+        value_get(:id) && !value_get(:id).blank? ? true : false
+      end
+
+      # set value
+      define_method "id=" do |new_value|
+        value_set :id, new_value
+      end
+      private "id=" #set it as private
+
+      redis_fields_config[:id] = :autoincrement
+
+    end
+
+    def remove_redis_autoincrement_key
+
+      puts "#{self.name} : remove"
+      # remove get value
+      remove_method :id
+
+      # remove value exists? (not nil and not blank?)
+      remove_method "id?"
+
+      # remove set value
+      remove_method "id="
+
+      redis_fields_config.delete(:id)
+    end
+
 
     # set redis key which will be used for storing model
     def redis_key *fields
       @redis_key_config = fields.flatten
       
       validate_redis_key
+      
+      #own specification of redis key - delete autoincrement
+      remove_redis_autoincrement_key unless redis_user_field_config.include?(:id) || @redis_key_config.include?(:id)
 
       # automaticaly add all fields from key to validation
       # if any of fields in redis key is nil
       # then prevent to save it
       @redis_validation_config ||= []
-      @redis_validation_config |= fields
+      @redis_validation_config |= @redis_key_config
     end
     
     # set redis model to normalize redis keys
@@ -103,7 +149,10 @@ module RedisModelExtension
       args = HashWithIndifferentAccess.new(args)
       # look for fields in input hash
       redis_fields_config.each do |key, type|
-        #input hash has known field
+        # disable to set nonexisting ID!
+        raise ArgumentError, "You cannot specify #{key} (it is auto incremented)" if args[key] && type == :autoincrement && Database.redis.get(self.class.autoincrement_key).to_i < args[key].to_i
+
+        # input hash has known field
         if args.has_key?(key) 
           value_set key, value_parse(args[key], type)
         else #there is no value set default valued
