@@ -63,6 +63,16 @@ module RedisModelExtension
       args.has_key?(key) && !args[key].nil?
     end
 
+    private 
+
+    #look for bad cofiguration in redis key and raise argument error
+    def validate_redis_key
+      valid_fields = redis_fields_config.select{|k,v| v != :array && v != :hash  }.keys
+      bad_fields = redis_key_config - valid_fields
+      raise ArgumentError, "Sorry, but you cannot use as redis key [nonexisting | array | hash] fields: [#{bad_fields.join(",")}], availible are: #{valid_fields.join(", ")}" unless bad_fields.size == 0
+    end
+      
+
   end
 
   module InstanceMethods

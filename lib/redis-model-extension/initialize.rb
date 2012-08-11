@@ -36,7 +36,9 @@ module RedisModelExtension
 
     # set redis key which will be used for storing model
     def redis_key *fields
-      @redis_key_config = fields
+      @redis_key_config = fields.flatten
+      
+      validate_redis_key
 
       # automaticaly add all fields from key to validation
       # if any of fields in redis key is nil

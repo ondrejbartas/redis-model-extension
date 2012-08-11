@@ -35,6 +35,39 @@ class RedisKeyTest < Test::Unit::TestCase
       assert_equal TestRedisModel.generate_alias_key(:token, @args), "#{TestRedisModel.to_s.underscore}:alias:token:bar"
     end  
 
+    context "invalid setting" do
+      should "raise ArgumentError on nonexisting field" do
+        assert_raises ArgumentError do
+          class RedisKeyNonExistingKeyRedisModel
+            include RedisModelExtension
+            redis_field :string,  :string
+            redis_key :unknown
+          end
+        end
+      end
+
+      should "raise ArgumentError on using Array as redis key" do
+        assert_raises ArgumentError do
+          class RedisKeyNonExistingKeyRedisModel
+            include RedisModelExtension
+            redis_field :array,  :array
+            redis_key :array
+          end
+        end
+      end
+
+      should "raise ArgumentError on using Hash as redis key" do
+        assert_raises ArgumentError do
+          class RedisKeyNonExistingKeyRedisModel
+            include RedisModelExtension
+            redis_field :array,  :array
+            redis_key :array
+          end
+        end
+      end
+
+    end
+
     context "normalization" do
       should "downcase" do
         class DowncaseRedisModel
