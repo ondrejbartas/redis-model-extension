@@ -10,7 +10,7 @@ class RedisModelTest < Test::Unit::TestCase
         redis_field :integer, :integer
         redis_field :boolean, :bool
         redis_field :string,  :string
-        redis_field :symbol,  :symbol
+        redis_field :symbol,  :symbol, :default
         redis_field :array,   :array
         redis_field :hash,    :hash
         redis_field :time,    :time
@@ -56,6 +56,10 @@ class RedisModelTest < Test::Unit::TestCase
         assert_equal @test_model.date, Date.today
       end
       
+      should "return default value when value is nil" do
+        assert_equal @test_model_partial.symbol, :default
+      end
+
       should "return valid exists?" do
         assert_equal @test_model.integer?, true
         assert_equal @test_model.string?, true
@@ -68,7 +72,7 @@ class RedisModelTest < Test::Unit::TestCase
         
         assert_equal @test_model_partial.integer?, true
         assert_equal @test_model_partial.string?, true
-        assert_equal @test_model_partial.symbol?, false
+        assert_equal @test_model_partial.symbol?, true, "should be set by default value"
         assert_equal @test_model_partial.boolean?, false
         assert_equal @test_model_partial.hash?, false
         assert_equal @test_model_partial.array?, false
