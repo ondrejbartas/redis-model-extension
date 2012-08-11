@@ -1,4 +1,4 @@
-module RedisModel
+module RedisModelExtension
   module ClassMethods
     
     #Generates redis key for storing object

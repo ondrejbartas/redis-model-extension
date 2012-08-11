@@ -57,7 +57,7 @@ Your class needs to include RedisModel and there is your testing configuration:
 
 ``` ruby
 class TestRedisModel
-  include RedisModel
+  include RedisModelExtension
 
   #REQUIRED:
   #redis_field :name_of_field, :filed_type, (:default_value - optional)

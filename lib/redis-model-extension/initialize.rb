@@ -1,4 +1,4 @@
-module RedisModel
+module RedisModelExtension
   module ClassMethods
 
     # read all data from redis and create new instance

@@ -28,7 +28,7 @@ require 'redis-model-extension'
 
 
 class TestRedisModel
-  include RedisModel
+  include RedisModelExtension
   redis_field :integer, :integer
   redis_field :boolean, :bool
   redis_field :string,  :string

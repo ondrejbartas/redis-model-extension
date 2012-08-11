@@ -1,4 +1,4 @@
-module RedisModel
+module RedisModelExtension
   module InstanceMethods
 
     def value_to_redis name, value

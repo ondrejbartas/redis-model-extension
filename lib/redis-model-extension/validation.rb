@@ -1,4 +1,4 @@
-module RedisModel
+module RedisModelExtension
   module InstanceMethods
 
     #validates required attributes

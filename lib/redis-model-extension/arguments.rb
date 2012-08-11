@@ -1,4 +1,4 @@
-module RedisModel
+module RedisModelExtension
   module InstanceMethods
 
     #take all arguments and send them out

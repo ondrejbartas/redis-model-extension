@@ -1,4 +1,4 @@
-module RedisModel
+module RedisModelExtension
   TYPE_TRANSLATIONS = { 
     :integer => :to_i, 
     :string => :to_s, 
@@ -16,7 +16,7 @@ module RedisModel
       @conf = {:reject_nil_values => true}.merge(conf)
       #take all fields and make methods for them
       conf[:fields].each do |name, action|
-        redis_fields_config[name] = RedisModel::TYPE_TRANSLATIONS.invert[action]
+        redis_fields_config[name] = RedisModelExtension::TYPE_TRANSLATIONS.invert[action]
         redis_fields_defaults_config[name] = nil
 
         define_method "#{name}" do
@@ -41,7 +41,7 @@ module RedisModel
     def conf
       fields = {}
       redis_fields_config.each do |key, type|
-        fields[key] = RedisModel::TYPE_TRANSLATIONS[type] if RedisModel::TYPE_TRANSLATIONS.has_key?(type)
+        fields[key] = RedisModelExtension::TYPE_TRANSLATIONS[type] if RedisModelExtension::TYPE_TRANSLATIONS.has_key?(type)
       end
       {
         fields: fields,

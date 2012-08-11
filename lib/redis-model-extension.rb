@@ -13,10 +13,7 @@ require 'active_support/core_ext/class/inheritable_attributes'
 require 'string_to_bool'
 require 'database'
 
-
-module RedisModel
-
-  attr_accessor :args, :error, :old_args, :conf
+module RedisModelExtension
 
   #include all needed modules directly into main class
   def self.included(base) 
@@ -34,11 +31,14 @@ module RedisModel
 end
 
 #require all additional modules
-require 'redis-model/initialize'
-require 'redis-model/old_initialize'
-require 'redis-model/value_transform'
-require 'redis-model/redis_key'
-require 'redis-model/get_find'
-require 'redis-model/validation'
-require 'redis-model/arguments'
-require 'redis-model/save_destroy'
+require 'redis-model-extension/initialize'
+require 'redis-model-extension/old_initialize'
+require 'redis-model-extension/value_transform'
+require 'redis-model-extension/redis_key'
+require 'redis-model-extension/get_find'
+require 'redis-model-extension/validation'
+require 'redis-model-extension/arguments'
+require 'redis-model-extension/save_destroy'
+
+#bad naming in past, will be removed
+require 'redis-model'

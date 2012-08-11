@@ -1,4 +1,4 @@
-module RedisModel
+module RedisModelExtension
   module ClassMethods
     #Wrapper around find to get all instances
     def all
