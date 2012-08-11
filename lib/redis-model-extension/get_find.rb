@@ -92,6 +92,17 @@ module RedisModelExtension
         nil
       end
     end 
-     
+    
+    
+    # read all data from redis and create new instance (used for Find & Get method)
+    def new_by_key(key)
+      args = HashWithIndifferentAccess.new(RedisModelExtension::Database.redis.hgetall(key))
+
+      new_instance = self.name.constantize.new(args)
+      new_instance.store_args
+
+      return new_instance
+    end
+
   end
 end
