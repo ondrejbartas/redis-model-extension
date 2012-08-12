@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 module RedisModelExtension
 
-  module ClassMethods
+  module ClassValidations
 
     # Validates if key by arguments is valid
     # (all needed fields are not nil!)
@@ -75,7 +75,7 @@ module RedisModelExtension
 
   end
 
-  module InstanceMethods
+  module Validations
 
     #pointer to validation
     def valid_key?

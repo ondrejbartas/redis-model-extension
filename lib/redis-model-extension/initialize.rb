@@ -1,7 +1,13 @@
 # -*- encoding : utf-8 -*-
 module RedisModelExtension
-  module ClassMethods
 
+  # == Class Initialize
+  # redis_field - defines fields to be stored into redis
+  # redis_alias - defines aliases for finding models 
+  # redis_key - defines wich fields will be in redis key
+  # redis_key_normalize - normalization of redis key (downcase, transliterate)
+  # redis_save_fields_with_nil - enable/disable save of nil fields into redis
+  module ClassInitialize
     VALID_NORMALIZATIONS = [:downcase, :transliterate]
 
     #add new field which will be saved into redis
@@ -55,7 +61,7 @@ module RedisModelExtension
       define_method "id=" do |new_value|
         value_set :id, new_value
       end
-      private "id=" #set it as private
+      private :id= #set it as private
 
       redis_fields_config[:id] = :autoincrement
 
@@ -142,7 +148,7 @@ module RedisModelExtension
 
   end
 
-  module InstanceMethods
+  module Initialize
 
     # initialize instance    
     def initialize(args={})
@@ -150,7 +156,7 @@ module RedisModelExtension
       # look for fields in input hash
       redis_fields_config.each do |key, type|
         # disable to set nonexisting ID!
-        raise ArgumentError, "You cannot specify #{key} (it is auto incremented)" if args[key] && type == :autoincrement && Database.redis.get(self.class.autoincrement_key).to_i < args[key].to_i
+        raise ArgumentError, "You cannot specify #{key} (it is auto incremented)" if args[key] && type == :autoincrement && get_last_id.to_i < args[key].to_i
 
         # input hash has known field
         if args.has_key?(key) 

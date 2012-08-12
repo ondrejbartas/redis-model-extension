@@ -17,17 +17,30 @@ module RedisModelExtension
 
   #include all needed modules directly into main class
   def self.included(base) 
-    base.send :extend,  ClassMethods         
-    base.send :include, InstanceMethods  
+    base.class_eval do
+      extend ClassInitialize
+      extend ClassOldInitialize
+      extend ClassConfig
+      extend ClassGetFind
+      extend ClassRedisKey  
+      extend ClassCreate
+      extend ClassValidations
+      extend ClassAutoincrementId
+
+      include Initialize
+      include Attributes
+      include AutoincrementId
+      include RedisKey
+      include StoreOldArguments
+      include Config
+      include SaveDestroy
+      include Validations
+      include ValueTransform
+    end
   end
 
-  module ClassMethods
-      
   end
-    
-  module InstanceMethods
-    
-  end
+
 end
 
 #require all additional modules
@@ -40,7 +53,7 @@ require 'redis-model-extension/get_find'
 require 'redis-model-extension/validation'
 require 'redis-model-extension/attributes'
 require 'redis-model-extension/save_destroy'
-require 'redis-model-extension/changed_redis_key'
+require 'redis-model-extension/store_old_arguments'
 require 'redis-model-extension/autoincrement_id'
 #bad naming in past, will be removed
 require 'redis-model'

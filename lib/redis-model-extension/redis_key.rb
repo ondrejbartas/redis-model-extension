@@ -1,6 +1,11 @@
 # -*- encoding : utf-8 -*-
 module RedisModelExtension
-  module ClassMethods
+  
+  # == Class Redis Key
+  # generators of redis keys
+  # used for creating keys for search and save of models & aliases
+  # 
+  module ClassRedisKey
 
     # Generates redis key for storing object
     # * will produce something like: your_class:key:field_value1:field_value2... 
@@ -14,10 +19,6 @@ module RedisModelExtension
         out += add_item_to_redis_key args, key
       end
       out
-    end
-
-    def autoincrement_key
-      "#{self.name.to_s.underscore.to_sym}:autoincrement_id"
     end
     
     # Generates redis key for storing indexes for aliases
@@ -105,8 +106,11 @@ module RedisModelExtension
     end
 
   end
-    
-  module InstanceMethods
+  
+  # == Redis Key
+  # aliases for instance to class generators of redis keys
+  # 
+  module RedisKey
 
     # get redis key for instance
     def redis_key

@@ -1,6 +1,8 @@
 # -*- encoding : utf-8 -*-
 module RedisModelExtension
-  module ClassMethods
+  # == Config
+  # set private methods for accessing & storing class configurations
+  module ClassConfig
 
     #store informations about saving nil values
     def redis_save_fields_with_nil_conf
@@ -46,38 +48,34 @@ module RedisModelExtension
 
   end
 
-  module InstanceMethods
-
+  # == Config
+  # set private methods for accessing class configurations form instance
+  module Config
     private 
 
-      # pointer to class settings
-      def redis_key_config
-        self.class.redis_key_config
-      end
+    # pointer to class settings
+    def redis_key_config
+      self.class.redis_key_config
+    end
 
-      # pointer to class settings
-      def redis_fields_config
-        self.class.redis_fields_config
-      end
+    # pointer to class settings
+    def redis_fields_config
+      self.class.redis_fields_config
+    end
 
-      # pointer to class settings
-      def redis_fields_defaults_config
-        self.class.redis_fields_defaults_config
-      end
+    # pointer to class settings
+    def redis_fields_defaults_config
+      self.class.redis_fields_defaults_config
+    end
 
-      # pointer to class settings
-      def redis_alias_config
-        self.class.redis_alias_config
-      end
+    # pointer to class settings
+    def redis_alias_config
+      self.class.redis_alias_config
+    end
 
-      # pointer to class settings
-      def redis_dynamic_alias_config
-        self.class.redis_dynamic_alias_config
-      end
-      
-      # pointer to class settings
-      def redis_validation_config
-        self.class.redis_validation_config
-      end
+    # pointer to class settings
+    def redis_dynamic_alias_config
+      self.class.redis_dynamic_alias_config
+    end
   end
 end

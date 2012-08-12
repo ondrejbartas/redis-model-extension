@@ -1,6 +1,6 @@
 # -*- encoding : utf-8 -*-
 module RedisModelExtension
-  module InstanceMethods
+  module ValueTransform
 
     # choose right type of value and then transform it for redis
     def value_to_redis name, value

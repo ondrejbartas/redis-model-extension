@@ -1,15 +1,17 @@
 # -*- encoding : utf-8 -*-
 module RedisModelExtension
-  module ClassMethods
+
+  # == Get & Find
+  # * Model.all => Array of all instances
+  # * Model.find(1) => Array of one instance with id 1
+  # * Model.get(1) => Array of one instance with id 1
+  # * Model.find( id: 1 ) => Array of one instance with id 1
+  # * Model.find( field: "test" ) => Array of all instances with field == test [field must be in redis key]
+  module ClassGetFind
 
     ######################################
     #  FIND METHODS
     ######################################
-
-    #Wrapper around find to get all instances
-    def all
-      self.find({})
-    end
 
     #Find method for searching in redis
     # * args (Integer) - search by id
@@ -35,6 +37,7 @@ module RedisModelExtension
       end
       out
     end
+    alias :all :find
 
     #Find method for searching in redis
     def find_by_alias(alias_name, args = {})

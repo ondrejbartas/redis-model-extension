@@ -1,18 +1,19 @@
 # -*- encoding : utf-8 -*-
 module RedisModelExtension
-  TYPE_TRANSLATIONS = { 
-    :integer => :to_i, 
-    :string => :to_s, 
-    :bool => :to_bool, 
-    :symbol => :to_sym, 
-    :array => :to_array, 
-    :hash => :to_hash, 
-    :time => :to_time, 
-    :date => :to_date 
-  }
 
-  module ClassMethods
-
+  # == Old Initialize
+  # port for old initialize method to new structure
+  module ClassOldInitialize
+    TYPE_TRANSLATIONS = { 
+      :integer => :to_i, 
+      :string => :to_s, 
+      :bool => :to_bool, 
+      :symbol => :to_sym, 
+      :array => :to_array, 
+      :hash => :to_hash, 
+      :time => :to_time, 
+      :date => :to_date 
+    }
     # old method to initialize redis model extenstion
     # Usage:
     #  REDIS_MODEL_CONF = {
@@ -35,10 +36,12 @@ module RedisModelExtension
     # include RedisModel
     # initialize_redis_model_methods REDIS_MODEL_CONF
     def initialize_redis_model_methods conf
+      puts "WARNING: This initilization method is deprecated and will be removed in future!"
+
       @conf = {:reject_nil_values => true}.merge(conf)
       #take all fields and make methods for them
       conf[:fields].each do |name, action|
-        redis_fields_config[name] = RedisModelExtension::TYPE_TRANSLATIONS.invert[action]
+        redis_fields_config[name] = TYPE_TRANSLATIONS.invert[action]
         redis_fields_defaults_config[name] = nil
 
         # define getter method for field
@@ -74,7 +77,7 @@ module RedisModelExtension
     def conf
       fields = {}
       redis_fields_config.each do |key, type|
-        fields[key] = RedisModelExtension::TYPE_TRANSLATIONS[type] if RedisModelExtension::TYPE_TRANSLATIONS.has_key?(type)
+        fields[key] = TYPE_TRANSLATIONS[type] if TYPE_TRANSLATIONS.has_key?(type)
       end
       {
         fields: fields,

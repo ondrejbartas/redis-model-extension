@@ -6,8 +6,9 @@ module RedisModel
   #include all needed modules directly into main class
   def self.included(base) 
     puts "WARNING: Using include RedisModel is deprecated and will be removed soon"
-    base.send :extend,  RedisModelExtension::ClassMethods         
-    base.send :include, RedisModelExtension::InstanceMethods  
+    base.class_eval do  
+      include RedisModelExtension
+    end
   end
 
 end

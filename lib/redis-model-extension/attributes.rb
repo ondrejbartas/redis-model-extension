@@ -1,6 +1,10 @@
 # -*- encoding : utf-8 -*-
 module RedisModelExtension
-  module InstanceMethods
+
+  # == Attribues
+  # modul for easier getting all attributes
+  # also for setting ang getting value instance variable
+  module Attributes
 
     #take all arguments and send them out
     def to_arg
