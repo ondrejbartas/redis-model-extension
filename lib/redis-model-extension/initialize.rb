@@ -95,24 +95,18 @@ module RedisModelExtension
       # automaticaly add all fields from key to validation
       # if any of fields in redis key is nil
       # then prevent to save it
-      @redis_validation_config ||= []
-      @redis_validation_config |= @redis_key_config
+      @redis_key_config.each do |field|
+        validates field, :presence => :true if field != :id
+      end
     end
     
     # set redis model to normalize redis keys
     def redis_key_normalize *metrics
-      pp metrics
       @redis_key_normalize_conf ||= []
       metrics.each do |metric|
         raise ArgumentError, "Please provide valid normalization: #{VALID_NORMALIZATIONS.join(", ")}" unless VALID_NORMALIZATIONS.include?(metric)
         @redis_key_normalize_conf << metric
       end
-    end
-
-    # set fields which will must be valid before save
-    def redis_validate *fields
-      @redis_validation_config ||= []
-      @redis_validation_config |= fields
     end
 
     # store informations about redis aliases

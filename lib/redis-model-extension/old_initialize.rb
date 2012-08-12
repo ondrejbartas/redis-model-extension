@@ -66,8 +66,11 @@ module RedisModelExtension
       # save into class config about redis key
       @redis_key_config = conf[:redis_key]
 
-      # save into class config about fileds validation
-      @redis_validation_config = conf[:required]
+      #validate presence of all fields in key
+      @required_config = (@redis_key_config | conf[:required]) 
+      (@redis_key_config | conf[:required]).each do |field|
+        validates field, :presence => :true
+      end
 
       # save into class config about redis keys
       @redis_alias_config = conf[:redis_aliases]
@@ -81,7 +84,7 @@ module RedisModelExtension
       end
       {
         fields: fields,
-        required: redis_validation_config,
+        required: @required_config.sort,
         redis_key: redis_key_config,
         redis_aliases: redis_alias_config,
         reject_nil_values: !redis_save_fields_with_nil_conf,

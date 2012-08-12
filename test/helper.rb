@@ -38,8 +38,9 @@ class TestRedisModel
   redis_field :time,    :time
   redis_field :date,    :date
   redis_field :float,   :float
-  
-  redis_validate :integer, :string 
+
+  validates :integer, :presence => true
+    
   redis_key :string
 
   redis_alias :token, [:symbol]

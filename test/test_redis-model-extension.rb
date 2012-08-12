@@ -24,7 +24,6 @@ class RedisModelTest < Test::Unit::TestCase
           include RedisModelExtension
           redis_field :integer, :integer
           redis_field :string, :string
-          redis_validate :string
           redis_key :string
           redis_save_fields_with_nil true
         end

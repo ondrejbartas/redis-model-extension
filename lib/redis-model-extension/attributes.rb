@@ -26,17 +26,12 @@ module RedisModelExtension
 
     # get value from instance variable
     def value_get name
-      if @redis_args && @redis_args.has_key?(name.to_sym)
-        @redis_args[name.to_sym]
-      else
-        nil
-      end
+      instance_variable_get(:"@#{name}")
     end
 
     # set value into instance variable
     def value_set name, value
-      @redis_args ||= {}
-      @redis_args[name.to_sym] = value
+      instance_variable_set(:"@#{name}", value)
     end
 
   end

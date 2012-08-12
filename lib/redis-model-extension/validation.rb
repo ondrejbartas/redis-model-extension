@@ -91,23 +91,9 @@ module RedisModelExtension
     def valid_dynamic_key? dynamic_alias_name
       self.class.valid_dynamic_key? dynamic_alias_name, to_arg
     end
-
-    # validates required attributes
-    def valid?
-      @error ||= []
-      redis_validation_config.each do |key|
-        @error.push("Required #{key}") unless self.send("#{key}?") || redis_fields_config[key] == :autoincrement
-      end
-      @error.size == 0
-    end
-
-    #return error from validation
-    def error
-      @error ||= []
-    end
     
-    #always forgotting which one to use :)
-    alias :errors :error    
-
+    def error
+      self.errors
+    end
   end
 end

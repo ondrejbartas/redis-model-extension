@@ -34,11 +34,6 @@ module RedisModelExtension
       @redis_dynamic_alias_config ||={}
     end
 
-    #store informations about current class fields validation
-    def redis_validation_config
-      @redis_validation_config ||= []
-    end
-
     private
 
     #store informations about all user defined fields settings

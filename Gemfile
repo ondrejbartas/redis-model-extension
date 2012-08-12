@@ -3,6 +3,7 @@ source "http://rubygems.org"
 gem "redis"
 gem "i18n"
 gem "activesupport"
+gem "activemodel"
 
 group :development do
   gem "shoulda", ">= 0"

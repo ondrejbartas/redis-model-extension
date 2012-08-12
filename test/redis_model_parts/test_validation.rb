@@ -47,26 +47,24 @@ class ValidationTest < Test::Unit::TestCase
       should "return errors after valid?" do
         test = TestRedisModel.new()
         assert !test.valid?, "shouldn't be valid"
-        assert_equal test.errors.size, 2, "should have 2 errors (2 required fields)" 
+        assert_equal test.errors.messages.size, 2, "should have 2 errors (2 required fields)" 
+        assert_equal test.error.messages.size, 2, "error should be asliased to errors" 
       end
 
-      should "be able to add custom error (ex. in initialize)" do
+      should "return errors and be aliased to error" do
         test = TestRedisModel.new()
-        test.error << "my custom error"
         assert !test.valid?, "shouldn't be valid"
-        assert_equal test.errors.size, 3, "should have 3 errors (2 required fields + 1 custom error)" 
-        assert_equal test.error.size, test.errors.size, "error and errors should be same (only as backup)" 
+        assert_equal test.error, test.errors
       end
 
       should "not raise exeption on invalid initialize" do
         assert_nothing_raised { TestRedisModel.new() }
       end
 
-      should "raise exeption on save" do
+      should "return false on save" do
         test_model = TestRedisModel.new()
-        assert_raises ArgumentError do
-          test_model.save
-        end
+        assert !test_model.save, "return false on save"
+        assert test_model.errors.any?, "have any error"
       end
 
     end

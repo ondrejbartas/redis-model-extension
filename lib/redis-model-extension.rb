@@ -3,6 +3,7 @@ require 'pp'
 require 'yaml'
 require 'json'
 require 'redis'
+require 'active_model'
 require 'active_support'
 require 'active_support/inflector'
 require 'active_support/inflector/inflections'
@@ -14,7 +15,7 @@ require 'string_to_bool'
 require 'database'
 
 module RedisModelExtension
-
+  extend ActiveSupport::Concern
   #include all needed modules directly into main class
   def self.included(base) 
     base.class_eval do
@@ -28,6 +29,7 @@ module RedisModelExtension
       extend ClassAutoincrementId
 
       include Initialize
+      include ActiveModelIntegration
       include Attributes
       include AutoincrementId
       include RedisKey
@@ -39,6 +41,18 @@ module RedisModelExtension
     end
   end
 
+  module ActiveModelIntegration
+    def self.included(base)
+      base.class_eval do
+        include ActiveModel::AttributeMethods
+        include ActiveModel::Validations
+        include ActiveModel::Naming
+        include ActiveModel::Conversion
+
+        extend  ActiveModel::Callbacks
+        define_model_callbacks :save, :destroy, :create
+      end
+    end
   end
 
 end
