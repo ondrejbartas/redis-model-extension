@@ -40,7 +40,7 @@ module RedisModelExtension
       when :bool then value.to_s.to_bool
       when :symbol then value.to_s.to_sym
       when :array then value.is_a?(String) ? JSON.parse(value) : value
-      when :hash then value.is_a?(String) ? JSON.parse(value) : value
+      when :hash then value.is_a?(String) ? Hashr.new(JSON.parse(value)) : Hashr.new(value)
       when :time then value.is_a?(String) ? Time.parse(value) : value
       when :date then value.is_a?(String) ? Date.parse(value) : value
       else value

@@ -4,6 +4,7 @@ gem "redis"
 gem "i18n"
 gem "activesupport"
 gem "activemodel"
+gem "hashr"
 
 group :development do
   gem "shoulda", ">= 0"

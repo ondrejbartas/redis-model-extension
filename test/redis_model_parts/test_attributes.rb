@@ -10,7 +10,7 @@ class AttributesTest < Test::Unit::TestCase
         :symbol => :bar, 
         :boolean => true, 
         :array => [1,2,3], 
-        :hash => {"foo"=>"bar", "test" => 2}, 
+        :hash => {:foo=>"bar", :test => 2}, 
         :time => @time, 
         :date => Date.today,
         :float => 12.32,
@@ -28,6 +28,14 @@ class AttributesTest < Test::Unit::TestCase
     should "should create valid to_json" do
       #keys in json are in different order, just spliting by separator (comma) and then validating
       assert_same_elements @test_model.to_json.split(","), @args.to_json.split(",")
+    end
+
+    should "should access hash by []" do
+      assert_equal @test_model.hash[:foo], "bar"
+    end
+
+    should "should access hash by hashr" do
+      assert_equal @test_model.hash.foo, "bar"
     end
 
   end

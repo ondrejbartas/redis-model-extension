@@ -35,7 +35,7 @@ class VariableTypesTest < Test::Unit::TestCase
       assert_equal @test_model.symbol, :bar
       assert_equal @test_model.boolean, true
       assert_equal @test_model.array, [1,2,3]
-      assert_equal @test_model.hash, {"foo"=>"bar", "test" => 2}
+      assert_equal @test_model.hash, {:foo=>"bar", :test => 2}
       assert_equal @test_model.time, @time
       assert_equal @test_model.date, Date.today
       assert_equal @test_model.float, 12.43
@@ -73,7 +73,7 @@ class VariableTypesTest < Test::Unit::TestCase
       @test_model.symbol = :foo
       @test_model.boolean = false
       @test_model.array = [4,5,6]
-      @test_model.hash = {"bar" => "foo"}
+      @test_model.hash = {:bar => "foo"}
       @test_model.time = @time-100
       @test_model.date = Date.today-10
       @test_model.float = 25.43
@@ -82,7 +82,7 @@ class VariableTypesTest < Test::Unit::TestCase
       assert_equal @test_model.symbol, :foo
       assert_equal @test_model.boolean, false
       assert_equal @test_model.array, [4,5,6]
-      assert_equal @test_model.hash, {"bar" => "foo"}
+      assert_equal @test_model.hash, {:bar => "foo"}
       assert_equal @test_model.time, @time-100
       assert_equal @test_model.date, Date.today-10
       assert_equal @test_model.float, 25.43

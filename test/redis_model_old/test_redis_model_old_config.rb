@@ -5,7 +5,7 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
     setup do
       RedisModelExtension::Database.redis.flushdb
 
-      @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true, :array => [1,2,3], :hash => {"foo"=>"bar", "test" => 2}}
+      @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true, :array => [1,2,3], :hash => {:foo=>"bar", :test => 2}}
       @test_model = TestOldRedisModel.new(@args)
       @test_model_partial = TestOldRedisModel.new(:integer => 12345, :string => "foo")
     end 
@@ -28,7 +28,7 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
         assert_equal @test_model.symbol, :bar
         assert_equal @test_model.boolean, true
         assert_equal @test_model.array, [1,2,3]
-        assert_equal @test_model.hash, {"foo"=>"bar", "test" => 2}
+        assert_equal @test_model.hash, {:foo=>"bar", :test => 2}
       end
       
       should "return valid exists?" do

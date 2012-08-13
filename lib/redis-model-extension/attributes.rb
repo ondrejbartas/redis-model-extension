@@ -31,7 +31,7 @@ module RedisModelExtension
 
     # set value into instance variable
     def value_set name, value
-      instance_variable_set(:"@#{name}", value)
+      instance_variable_set(:"@#{name}", value_parse(value, redis_fields_defaults_config[name]))
     end
 
   end
