@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "redis-model-extension"
-  s.version = "0.3.8"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ondrej Bartas"]
-  s.date = "2012-08-09"
+  s.date = "2012-08-13"
   s.description = "It provides functions as find, find_by_alias, get, exists?, validate, save etc."
   s.email = "ondrej@bartas.cz"
   s.extra_rdoc_files = [
@@ -27,12 +27,37 @@ Gem::Specification.new do |s|
     "config/redis_setup.conf",
     "lib/database.rb",
     "lib/redis-model-extension.rb",
+    "lib/redis-model-extension/attributes.rb",
+    "lib/redis-model-extension/autoincrement_id.rb",
+    "lib/redis-model-extension/config.rb",
+    "lib/redis-model-extension/get_find.rb",
+    "lib/redis-model-extension/initialize.rb",
+    "lib/redis-model-extension/old_initialize.rb",
+    "lib/redis-model-extension/redis_key.rb",
+    "lib/redis-model-extension/save_destroy.rb",
+    "lib/redis-model-extension/store_keys.rb",
+    "lib/redis-model-extension/validation.rb",
+    "lib/redis-model-extension/value_transform.rb",
+    "lib/redis-model.rb",
     "lib/string_to_bool.rb",
     "redis-model-extension.gemspec",
     "redis-model.gemspec",
     "test/helper.rb",
+    "test/models.rb",
+    "test/redis_model_old/test_redis_model_old_config.rb",
+    "test/redis_model_parts/test_attributes.rb",
+    "test/redis_model_parts/test_autoincrement_id.rb",
+    "test/redis_model_parts/test_dynamic_alias.rb",
+    "test/redis_model_parts/test_get_find.rb",
+    "test/redis_model_parts/test_hooks.rb",
+    "test/redis_model_parts/test_initialize.rb",
+    "test/redis_model_parts/test_redis_key.rb",
+    "test/redis_model_parts/test_save_destroy.rb",
+    "test/redis_model_parts/test_validation.rb",
+    "test/redis_model_parts/test_variable_types.rb",
     "test/test_database_module.rb",
-    "test/test_redis-model-extension.rb"
+    "test/test_redis-model-extension.rb",
+    "test/test_string_to_bool.rb"
   ]
   s.homepage = "http://github.com/ondrejbartas/redis-model-extension"
   s.licenses = ["MIT"]
@@ -47,11 +72,14 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<redis>, [">= 0"])
       s.add_runtime_dependency(%q<i18n>, [">= 0"])
       s.add_runtime_dependency(%q<activesupport>, [">= 0"])
+      s.add_runtime_dependency(%q<activemodel>, [">= 0"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<shoulda-context>, [">= 0"])
+      s.add_development_dependency(%q<mocha>, [">= 0"])
+      s.add_development_dependency(%q<simplecov>, ["~> 0.6.4"])
       s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<rack>, [">= 0"])
-      s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_development_dependency(%q<sdoc>, [">= 0"])
       s.add_development_dependency(%q<bundler>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.8.3"])
       s.add_development_dependency(%q<turn>, ["~> 0.8.2"])
@@ -61,11 +89,14 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<redis>, [">= 0"])
       s.add_dependency(%q<i18n>, [">= 0"])
       s.add_dependency(%q<activesupport>, [">= 0"])
+      s.add_dependency(%q<activemodel>, [">= 0"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<shoulda-context>, [">= 0"])
+      s.add_dependency(%q<mocha>, [">= 0"])
+      s.add_dependency(%q<simplecov>, ["~> 0.6.4"])
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<rack>, [">= 0"])
-      s.add_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_dependency(%q<sdoc>, [">= 0"])
       s.add_dependency(%q<bundler>, [">= 0"])
       s.add_dependency(%q<jeweler>, ["~> 1.8.3"])
       s.add_dependency(%q<turn>, ["~> 0.8.2"])
@@ -76,11 +107,14 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<redis>, [">= 0"])
     s.add_dependency(%q<i18n>, [">= 0"])
     s.add_dependency(%q<activesupport>, [">= 0"])
+    s.add_dependency(%q<activemodel>, [">= 0"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<shoulda-context>, [">= 0"])
+    s.add_dependency(%q<mocha>, [">= 0"])
+    s.add_dependency(%q<simplecov>, ["~> 0.6.4"])
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<rack>, [">= 0"])
-    s.add_dependency(%q<rdoc>, ["~> 3.12"])
+    s.add_dependency(%q<sdoc>, [">= 0"])
     s.add_dependency(%q<bundler>, [">= 0"])
     s.add_dependency(%q<jeweler>, ["~> 1.8.3"])
     s.add_dependency(%q<turn>, ["~> 0.8.2"])
