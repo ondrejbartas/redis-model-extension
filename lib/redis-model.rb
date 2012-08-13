@@ -5,7 +5,7 @@ module RedisModel
 
   #include all needed modules directly into main class
   def self.included(base) 
-    puts "WARNING: Using include RedisModel is deprecated and will be removed soon"
+    puts "WARNING: Using include RedisModel is deprecated and will be removed in future! Please use 'include RedisModelExtension'"
     base.class_eval do  
       include RedisModelExtension
     end

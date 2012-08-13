@@ -36,7 +36,7 @@ module RedisModelExtension
     # include RedisModel
     # initialize_redis_model_methods REDIS_MODEL_CONF
     def initialize_redis_model_methods conf
-      puts "WARNING: This initilization method is deprecated and will be removed in future!"
+      puts "WARNING: This initilization method is deprecated and will be removed in future! \n Please read documentation how to change your model to use new initialization methods"
 
       @conf = {:reject_nil_values => true}.merge(conf)
       #take all fields and make methods for them
