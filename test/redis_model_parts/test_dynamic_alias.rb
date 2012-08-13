@@ -4,13 +4,6 @@ class DynamicAliasTest < Test::Unit::TestCase
   context "Dynamic alias" do
     setup do
       RedisModelExtension::Database.redis.flushdb
-      class DynamicAlias
-        include RedisModelExtension
-        redis_field :name,  :string
-        redis_field :items, :hash
-        redis_key :name
-        redis_dynamic_alias :items_with_name, [:name], :items_order, :items
-      end
       @args = { 
         :name => "Foo", 
         :items => {
@@ -26,7 +19,7 @@ class DynamicAliasTest < Test::Unit::TestCase
       context "redis key" do
 
         should "be merged alias key + custom key" do
-          assert_equal DynamicAlias.generate_dynamic_key(:items_with_name, @args), "dynamic_alias_test/dynamic_alias:dynamic:items_with_name:Foo:test2:test"
+          assert_equal DynamicAlias.generate_dynamic_key(:items_with_name, @args), "dynamic_alias:dynamic:items_with_name:Foo:test2:test"
         end
 
         should "validate redis_alias_key" do
@@ -44,7 +37,7 @@ class DynamicAliasTest < Test::Unit::TestCase
       context "redis key" do
 
         should "return valid key" do
-          assert_equal DynamicAlias.new(@args).redis_dynamic_key(:items_with_name), "dynamic_alias_test/dynamic_alias:dynamic:items_with_name:Foo:test2:test"
+          assert_equal DynamicAlias.new(@args).redis_dynamic_key(:items_with_name), "dynamic_alias:dynamic:items_with_name:Foo:test2:test"
         end
 
         should "validate key" do
@@ -65,12 +58,11 @@ class DynamicAliasTest < Test::Unit::TestCase
       end
       
       should "be saved and then change of variable included in key should rename it in redis!" do
-        assert_equal RedisModelExtension::Database.redis.keys("*").size, 2, "on the start should be only 2 keys" #including key and alias
+        before = RedisModelExtension::Database.redis.keys("*").size
         assert @dynamic_alias.dynamic_exists?(:items_with_name), "Dynamic alias should exists"
         @dynamic_alias.name = "change_of_string"
         @dynamic_alias.save
-        pp RedisModelExtension::Database.redis.keys("*")
-        assert_equal RedisModelExtension::Database.redis.keys("*").size, 2, "after update there should be only 2 keys" #including key and alias
+        assert_equal RedisModelExtension::Database.redis.keys("*").size, before, "after update there should be same number of keys" #including key and alias
       end
   
       should "remove key and aliases" do
@@ -80,10 +72,10 @@ class DynamicAliasTest < Test::Unit::TestCase
       end
 
       should "destroy!" do
-        assert test = DynamicAlias.get(@args)
-        test.destroy!
-        assert_equal DynamicAlias.exists?(@args), false, "Should not exists"
-        assert_equal DynamicAlias.exists?(@args), false, "Should not exists"
+        pp RedisModelExtension::Database.redis.keys("*")
+        @dynamic_alias.destroy!
+        assert_equal @dynamic_alias.exists?, false, "Should not exists"
+        assert_equal DynamicAlias.exists?(@args.merge(:id => @dynamic_alias.id)), false, "Should not exist by class method"
       end
     
     end

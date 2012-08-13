@@ -13,14 +13,6 @@ class RedisModelAutoincrementTest < Test::Unit::TestCase
 
     context "without redis_key specified" do
     
-      setup do
-        class AutoincrementNotSet
-          include RedisModelExtension
-          redis_field :name, :string
-          redis_field :email, :string
-        end
-      end
-
       should "have redis_key with id" do
         assert_equal AutoincrementNotSet.redis_key_config, [:id]
         assert AutoincrementNotSet.new.respond_to?(:id), "get method"
@@ -36,15 +28,6 @@ class RedisModelAutoincrementTest < Test::Unit::TestCase
 
     context "with redis_key specified" do
     
-      setup do
-        class AutoincrementSetRedisKey
-          include RedisModelExtension
-          redis_field :name, :string
-          redis_field :email, :string
-          redis_key [:id]
-        end
-      end
-
       should "have redis_key with id" do
         assert_equal AutoincrementSetRedisKey.redis_key_config, [:id]
         assert AutoincrementSetRedisKey.new.respond_to?(:id), "get method"

@@ -8,6 +8,7 @@ gem "activemodel"
 group :development do
   gem "shoulda", ">= 0"
   gem 'shoulda-context'
+  gem 'mocha'
   gem "simplecov", "~> 0.6.4"
   gem "rake"
   gem "rack"

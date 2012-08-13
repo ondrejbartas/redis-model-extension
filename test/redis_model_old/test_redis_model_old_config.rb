@@ -4,27 +4,7 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
   context "Old RedisModel config" do
     setup do
       RedisModelExtension::Database.redis.flushdb
-      
-      class TestOldRedisModel
-        REDIS_MODEL_CONF = {
-           :fields => { 
-             :integer => :to_i,
-             :boolean => :to_bool,
-             :string => :to_s,
-             :symbol => :to_sym,
-             :array => :to_array,
-             :hash => :to_hash,
-            }, 
-            :required => [:integer, :string],
-            :redis_key => [:string],
-            :redis_aliases => {
-              :token => [:symbol]
-            },
-            :reject_nil_values => true,
-         }
-         include RedisModel
-         initialize_redis_model_methods REDIS_MODEL_CONF
-      end
+
       @args = {"integer" => 12345, :string => "foo", :symbol => :bar, :boolean => true, :array => [1,2,3], :hash => {"foo"=>"bar", "test" => 2}}
       @test_model = TestOldRedisModel.new(@args)
       @test_model_partial = TestOldRedisModel.new(:integer => 12345, :string => "foo")
