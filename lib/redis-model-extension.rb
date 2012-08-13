@@ -33,7 +33,7 @@ module RedisModelExtension
       include Attributes
       include AutoincrementId
       include RedisKey
-      include StoreOldArguments
+      include StoreKeys
       include Config
       include SaveDestroy
       include Validations
@@ -67,7 +67,7 @@ require 'redis-model-extension/get_find'
 require 'redis-model-extension/validation'
 require 'redis-model-extension/attributes'
 require 'redis-model-extension/save_destroy'
-require 'redis-model-extension/store_old_arguments'
+require 'redis-model-extension/store_keys'
 require 'redis-model-extension/autoincrement_id'
 #bad naming in past, will be removed
 require 'redis-model'

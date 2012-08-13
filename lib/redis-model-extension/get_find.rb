@@ -137,7 +137,7 @@ module RedisModelExtension
       args = HashWithIndifferentAccess.new(RedisModelExtension::Database.redis.hgetall(key))
 
       new_instance = self.name.constantize.new(args)
-      new_instance.store_args
+      new_instance.store_keys
 
       return new_instance
     end

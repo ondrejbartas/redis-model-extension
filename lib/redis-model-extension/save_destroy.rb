@@ -26,9 +26,8 @@ module RedisModelExtension
           generated_key = redis_key        
 
           #take care about renaming saved hash in redis (if key changed)
-          if redis_old_args 
-            old_key = self.class.generate_key(redis_old_args)
-            RedisModelExtension::Database.redis.rename(old_key, generated_key) if generated_key != old_key && RedisModelExtension::Database.redis.exists(old_key)
+          if redis_old_keys[:key] && redis_old_keys[:key] !=  generated_key && RedisModelExtension::Database.redis.exists(redis_old_keys[:key])
+            RedisModelExtension::Database.redis.rename(redis_old_keys[:key], generated_key)
           end
 
           #ignore nil values for save 
@@ -42,7 +41,7 @@ module RedisModelExtension
           create_aliases
 
           #after save make sure instance remember old key to know if it needs to be ranamed
-          store_args
+          store_keys
         end
 
         run_callbacks :save do
@@ -94,11 +93,9 @@ module RedisModelExtension
     # remove all aliases
     def destroy_aliases!
       #do it only if it is existing object!
-      if redis_old_args
-        redis_alias_config.each do |alias_name, fields|
-          if self.class.valid_alias_key?(alias_name, redis_old_args) && self.class.alias_exists?(alias_name, redis_old_args)
-            RedisModelExtension::Database.redis.del self.class.generate_alias_key(alias_name, redis_old_args)
-          end
+      if redis_old_keys[:aliases].size > 0
+        redis_old_keys[:aliases].each do |alias_key|
+          RedisModelExtension::Database.redis.del alias_key
         end
       end
     end
