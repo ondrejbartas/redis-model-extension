@@ -45,6 +45,13 @@ class RedisModelAutoincrementTest < Test::Unit::TestCase
         assert_equal saved_instance.id, 1, "Should be first id 1"
       end
 
+      should "be incremented" do
+        assert_equal AutoincrementSetRedisKey.create(@args).id, 1, "First should have id 1"
+        assert_equal AutoincrementSetRedisKey.create(@args).id, 2, "First should have id 2"
+        assert_equal AutoincrementSetRedisKey.create(@args).id, 3, "First should have id 3"
+        assert_equal AutoincrementSetRedisKey.create(@args).id, 4, "First should have id 4"
+      end
+
       should "be getted by directly id" do
         saved_instance = AutoincrementSetRedisKey.new(@args)
         saved_instance.save

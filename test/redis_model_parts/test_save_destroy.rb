@@ -19,6 +19,13 @@ class SaveDestroyTest < Test::Unit::TestCase
       @test_model = TestRedisModel.new(@args)
     end 
     
+    context "create" do
+      should "be saved" do
+        assert test_model = TestRedisModel.create(@args), "should be saved"
+        assert !test_model.errors.any?, "no erros"
+      end
+    end
+
     context "saving" do
       setup do
         @test_model.save
