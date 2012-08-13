@@ -94,11 +94,30 @@ class DynamicAliasTest < Test::Unit::TestCase
         assert_same_elements @getted_model.items.to_json.split(","), @dynamic_alias.items.to_json.split(",")
       end
 
+      should "be getted by get_by_name_of_alias" do
+        @getted_model = DynamicAlias.get_by_items_with_name(@args)
+        assert_not_nil @getted_model, "Should return model"
+        assert_equal @getted_model.name, @dynamic_alias.name
+        assert_same_elements @getted_model.items.to_json.split(","), @dynamic_alias.items.to_json.split(",")
+      end
+
       should "be find by dynamic alias" do
         @getted_models = DynamicAlias.find_by_alias(:items_with_name, :items => {:bar => "test"})
         assert_equal @getted_models.size, 1, "Should be only one with alias" 
 
         @getted_models = DynamicAlias.find_by_alias(:items_with_name, @args)
+        assert_equal @getted_models.size, 1, "Should be find by get by alias full args" 
+        
+        @getted_model = @getted_models.first
+        assert_equal @getted_model.name, @dynamic_alias.name
+        assert_same_elements @getted_model.items.to_json.split(","), @dynamic_alias.items.to_json.split(",")
+      end
+
+      should "be found by find_by_name_of_alias" do
+        @getted_models = DynamicAlias.find_by_items_with_name(:items => {:bar => "test"})
+        assert_equal @getted_models.size, 1, "Should be only one with alias" 
+
+        @getted_models = DynamicAlias.find_by_items_with_name(@args)
         assert_equal @getted_models.size, 1, "Should be find by get by alias full args" 
         
         @getted_model = @getted_models.first

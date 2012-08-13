@@ -74,6 +74,13 @@ class GetFindTest < Test::Unit::TestCase
         assert_equal @getted_model.symbol, @test_model.symbol
         assert_equal @getted_model.boolean, @test_model.boolean
       end
+
+      should "be find by find_by_alias_name" do
+        @getted_models = TestRedisModel.find_by_token(:symbol => :bar)
+        assert_equal @getted_models.size, 1, "Should be only one with alias" 
+        @getted_model = @getted_models.first
+        assert_equal @getted_model.integer, @test_model.integer
+      end
     
       should "be find all by alias" do
         @getted_models = TestRedisModel.find_by_alias(:token ,{})
@@ -83,6 +90,13 @@ class GetFindTest < Test::Unit::TestCase
         assert_equal @getted_model.string, @test_model.string
         assert_equal @getted_model.symbol, @test_model.symbol
         assert_equal @getted_model.boolean, @test_model.boolean
+      end
+
+      should "be find all by find_by_name_of_alais" do
+        @getted_models = TestRedisModel.find_by_token({})
+        assert_equal @getted_models.size, 1, "Should be only one with alias" 
+        @getted_model = @getted_models.first
+        assert_equal @getted_model.integer, @test_model.integer
       end
     
       should "be getted after change in alias" do

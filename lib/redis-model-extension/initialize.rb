@@ -124,6 +124,9 @@ module RedisModelExtension
         order_field: name_of_field_for_order,
         args_field: name_of_field_for_args,
       }
+
+      #create alias methods for find and get (find_by_name, get_by_name)
+      create_class_alias_method(name)
     end
 
     # store informations about saving nil values
@@ -134,6 +137,19 @@ module RedisModelExtension
     # store informations about redis key normalization
     def redis_key_normalize_conf
       @redis_key_normalize_conf ||= []
+    end
+
+    private
+    
+    def create_class_alias_method(name)
+      self.class.instance_eval do
+        define_method("find_by_#{name}") do |args|
+          find_by_alias(name, args)
+        end
+        define_method("get_by_#{name}") do |args|
+          get_by_alias(name, args)
+        end
+      end
     end
 
   end
