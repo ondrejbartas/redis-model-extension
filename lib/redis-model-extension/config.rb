@@ -29,11 +29,6 @@ module RedisModelExtension
       @redis_alias_config ||= {}
     end
 
-    #store informations about current class dynamic alias settings
-    def redis_dynamic_alias_config
-      @redis_dynamic_alias_config ||={}
-    end
-
     private
 
     #store informations about all user defined fields settings
@@ -68,9 +63,5 @@ module RedisModelExtension
       self.class.redis_alias_config
     end
 
-    # pointer to class settings
-    def redis_dynamic_alias_config
-      self.class.redis_dynamic_alias_config
-    end
   end
 end

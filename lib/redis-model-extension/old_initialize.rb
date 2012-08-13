@@ -73,7 +73,14 @@ module RedisModelExtension
       end
 
       # save into class config about redis keys
-      @redis_alias_config = conf[:redis_aliases]
+      @redis_alias_config = {}
+      conf[:redis_aliases].each do |key, fields|
+        @redis_alias_config[key] = { 
+          main_fields: fields,
+          order_field: nil,
+          args_field: nil,
+        }
+      end
     end
     
     # get config hash
@@ -86,7 +93,7 @@ module RedisModelExtension
         fields: fields,
         required: @required_config.sort,
         redis_key: redis_key_config,
-        redis_aliases: redis_alias_config,
+        redis_aliases: redis_alias_config.inject({}){|o,(k,v)| o[k] = v[:main_fields]; o},
         reject_nil_values: !redis_save_fields_with_nil_conf,
       }
     end

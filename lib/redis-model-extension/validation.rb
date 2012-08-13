@@ -15,30 +15,16 @@ module RedisModelExtension
       return true
     end
 
+
     # Validates if key by alias name and arguments is valid
     # (all needed fields are not nil!)
     def valid_alias_key? alias_name, args = {}
-      raise ArgumentError, "Unknown alias, use: #{redis_alias_config.keys.join(", ")}" unless redis_alias_config.has_key?(alias_name.to_sym)
+      raise ArgumentError, "Unknown dynamic alias, use: #{redis_alias_config.keys.join(", ")}" unless redis_alias_config.has_key?(alias_name.to_sym)
 
       #normalize input hash of arguments
       args = HashWithIndifferentAccess.new(args)
 
-      redis_alias_config[alias_name.to_sym].each do |key|
-        return false unless valid_item_for_redis_key? args, key
-      end
-      return true
-    end
-
-
-    # Validates if key by alias name and arguments is valid
-    # (all needed fields are not nil!)
-    def valid_dynamic_key? dynamic_alias_name, args = {}
-      raise ArgumentError, "Unknown dynamic alias, use: #{redis_dynamic_alias_config.keys.join(", ")}" unless redis_dynamic_alias_config.has_key?(dynamic_alias_name.to_sym)
-
-      #normalize input hash of arguments
-      args = HashWithIndifferentAccess.new(args)
-
-      config = redis_dynamic_alias_config[dynamic_alias_name.to_sym]
+      config = redis_alias_config[alias_name.to_sym]
 
 
       # use all specified keys
@@ -46,15 +32,19 @@ module RedisModelExtension
         return false unless valid_item_for_redis_key? args, key
       end
 
-      #check if input arguments has order field
-      if args.has_key?(config[:order_field]) && args[config[:order_field]] && args.has_key?(config[:args_field]) && args[config[:args_field]]
-        #use filed order from defined field in args
-        args[config[:order_field]].each do |key|
-          return false unless valid_item_for_redis_key? args[config[:args_field]], key
+      # is dynamic alias?
+        if config[:order_field] && config[:args_field]
+        #check if input arguments has order field
+        if args.has_key?(config[:order_field]) && args[config[:order_field]] && args.has_key?(config[:args_field]) && args[config[:args_field]]
+          #use filed order from defined field in args
+          args[config[:order_field]].each do |key|
+            return false unless valid_item_for_redis_key? args[config[:args_field]], key
+          end
+        else 
+          return false
         end
-      else 
-        return false
       end
+
       return true
     end
 
@@ -85,11 +75,6 @@ module RedisModelExtension
     #pointer to validation
     def valid_alias_key? alias_name
       self.class.valid_alias_key? alias_name, to_arg
-    end
-
-    #pointer to validation
-    def valid_dynamic_key? dynamic_alias_name
-      self.class.valid_dynamic_key? dynamic_alias_name, to_arg
     end
     
     def error

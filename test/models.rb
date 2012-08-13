@@ -59,7 +59,7 @@ class DynamicAlias
   redis_field :name,  :string
   redis_field :items, :hash
   redis_key :name
-  redis_dynamic_alias :items_with_name, [:name], :items_order, :items
+  redis_alias :items_with_name, [:name], :items_order, :items
 end
 
 class WithCallbacks

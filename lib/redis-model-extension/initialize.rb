@@ -110,20 +110,16 @@ module RedisModelExtension
     end
 
     # store informations about redis aliases
-    def redis_alias name, fields
-      @redis_alias_config ||= {}
-      @redis_alias_config[name] = fields
-    end
-
-    # store informations about redis aliases
-    def redis_dynamic_alias name, main_fields, name_of_field_for_order, name_of_field_for_args 
+    def redis_alias name, main_fields, name_of_field_for_order = nil, name_of_field_for_args = nil
       #set fields if they are not allready set!
-      redis_field name_of_field_for_order, :array, [] unless redis_fields_config.has_key?(name_of_field_for_order)
-      redis_field name_of_field_for_args, :hash, {} unless redis_fields_config.has_key?(name_of_field_for_args)
+      if name_of_field_for_order && name_of_field_for_args
+        redis_field name_of_field_for_order, :array, [] unless redis_fields_config.has_key?(name_of_field_for_order)
+        redis_field name_of_field_for_args, :hash, {} unless redis_fields_config.has_key?(name_of_field_for_args)
+      end
 
-      @redis_dynamic_alias_config ||= {}
+      @redis_alias_config ||= {}
       #add specification of dynamic alias
-      @redis_dynamic_alias_config[name] = { 
+      @redis_alias_config[name] = { 
         main_fields: main_fields,
         order_field: name_of_field_for_order,
         args_field: name_of_field_for_args,
