@@ -16,9 +16,10 @@ module RedisModelExtension
 
     # save method - save all attributes (fields) and create aliases
     def save
-      # can be saved into redis?
-      if valid?
-        perform = lambda do
+      perform = lambda do
+        # can be saved into redis?
+        if valid?
+
           #autoicrement id
           self.send("id=", increment_id) if redis_key_config.include?(:id) && !self.id?
 
@@ -43,16 +44,18 @@ module RedisModelExtension
           #after save make sure instance remember old key to know if it needs to be ranamed
           store_keys
         end
+      end
 
-        run_callbacks :save do
-          unless exists?
-            run_callbacks :create do
-              perform.()
-            end
-          else
+      run_callbacks :save do
+        unless exists?
+          run_callbacks :create do
             perform.()
           end
+        else
+          perform.()
         end
+      end
+      unless errors.any?
         return self
       else
         return false
