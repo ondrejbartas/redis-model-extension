@@ -24,14 +24,12 @@ module RedisModelExtension
 
       out = []
       klass = self.name.constantize
-      
+      search_key = klass.generate_key(args)
       #is key specified directly? -> no needs of looking for other keys! -> faster
-      if klass.valid_key?(args)
-        if klass.exists?(args)
-          out << klass.new_by_key(klass.generate_key(args)) 
-        end
+      unless search_key =~ /\*/
+        out << klass.new_by_key(search_key) if klass.exists?(args)
       else
-        RedisModelExtension::Database.redis.keys(klass.generate_key(args)).each do |key|
+        RedisModelExtension::Database.redis.keys(search_key).each do |key|
           out << klass.new_by_key(key) 
         end
       end
@@ -49,11 +47,12 @@ module RedisModelExtension
 
       out = []
       klass = self.name.constantize
+      search_key = klass.generate_alias_key(alias_name, args)
       #is key specified directly? -> no needs of looking for other keys! -> faster
-      if klass.valid_alias_key?(alias_name, args)
+      unless search_key =~ /\*/
         out << klass.get_by_alias(alias_name, args) if klass.alias_exists?(alias_name, args)
       else
-        RedisModelExtension::Database.redis.keys(klass.generate_alias_key(alias_name, args)).each do |key|
+        RedisModelExtension::Database.redis.keys(search_key).each do |key|
           out << klass.get_by_alias_key(key)
         end
       end
@@ -134,9 +133,9 @@ module RedisModelExtension
         
     # read all data from redis and create new instance (used for Find & Get method)
     def new_by_key(key)
-      args = HashWithIndifferentAccess.new(RedisModelExtension::Database.redis.hgetall(key))
+      args = RedisModelExtension::Database.redis.hgetall(key).symbolize_keys
 
-      new_instance = self.name.constantize.new(args)
+      new_instance = new(args)
       new_instance.store_keys
 
       return new_instance
