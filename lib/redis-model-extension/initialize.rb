@@ -68,8 +68,6 @@ module RedisModelExtension
     end
 
     def remove_redis_autoincrement_key
-
-      puts "#{self.name} : remove"
       # remove get value
       remove_method :id
 
