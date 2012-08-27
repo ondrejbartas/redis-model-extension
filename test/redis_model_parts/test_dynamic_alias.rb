@@ -72,7 +72,6 @@ class DynamicAliasTest < Test::Unit::TestCase
       end
 
       should "destroy!" do
-        pp RedisModelExtension::Database.redis.keys("*")
         @dynamic_alias.destroy!
         assert_equal @dynamic_alias.exists?, false, "Should not exists"
         assert_equal DynamicAlias.exists?(@args.merge(:id => @dynamic_alias.id)), false, "Should not exist by class method"
