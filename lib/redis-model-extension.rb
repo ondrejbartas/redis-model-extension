@@ -11,7 +11,6 @@ require 'active_support/inflector/inflections'
 require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/object/blank'
-require 'active_support/core_ext/class/inheritable_attributes'
 require 'string_to_bool'
 require 'database'
 

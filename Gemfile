@@ -10,14 +10,14 @@ group :development do
   gem "shoulda", ">= 0"
   gem 'shoulda-context'
   gem 'mocha'
-  gem "simplecov", "~> 0.6.4"
+  gem "simplecov"
   gem "rake"
   gem "rack"
   gem "sdoc" # sdoc -N .
   gem "bundler"
-  gem "jeweler", "~> 1.8.3"
-  gem "turn", "~> 0.8.2"
+  gem "jeweler"
+  gem "turn"
   gem "minitest"
-  gem "ansi", "~> 1.2.5"
+  gem "ansi" 
 end
 
