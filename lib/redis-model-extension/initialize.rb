@@ -45,7 +45,7 @@ module RedisModelExtension
     end
 
     def set_redis_autoincrement_key
-      @redis_key_config = [:id]
+      @redis_key_config ||= [:id]
 
       # get value
       define_method :id do

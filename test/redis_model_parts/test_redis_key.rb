@@ -24,6 +24,17 @@ class RedisKeyTest < Test::Unit::TestCase
       assert_equal TestRedisModel.generate_key(@args.merge({:string => nil})), "#{TestRedisModel.to_s.underscore}:key:*"
     end  
 
+		should "generate right search key even if the order is random" do
+			class Article
+				include RedisModelExtension
+				redis_field :aid, :integer
+				redis_key  :aid
+				redis_field :owner_id, :string
+			end
+
+			assert_equal 'redis_key_test/article:key:2', Article.generate_key(aid: 2)
+		end
+
          
     should "generate right key" do
       assert_equal @test_model.redis_key, "#{TestRedisModel.to_s.underscore}:key:foo"
