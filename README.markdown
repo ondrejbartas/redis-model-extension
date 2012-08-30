@@ -55,6 +55,14 @@ RedisModelExtension::Database.redis_config(:host => "127.0.0.1", :port => 6379, 
 Your class needs to include RedisModel and there is your testing configuration:
 ([old initialization - still working :)](https://github.com/ondrejbartas/redis-model-extension/wiki/Old-initialization))
 
+Lots of aditional informations can be found in [WIKI](https://github.com/ondrejbartas/redis-model-extension/wiki) or directly:
+
+* [Auto-increment IDs](https://github.com/ondrejbartas/redis-model-extension/wiki/Auto-increment-IDs)
+* [Validations](https://github.com/ondrejbartas/redis-model-extension/wiki/Validations)
+* [Aliases](https://github.com/ondrejbartas/redis-model-extension/wiki/Aliases)
+* [Update multiple attributes](https://github.com/ondrejbartas/redis-model-extension/wiki/Update-multiple-attributes)
+* [Before After Hooks](https://github.com/ondrejbartas/redis-model-extension/wiki/Before-After-Hooks)
+ 
 ``` ruby
 class TestRedisModel
   include RedisModelExtension
@@ -93,27 +101,39 @@ end
 
 foo = TestRedisModel.new()
 
-# you can validate your object
+# you can set/get values
+foo.field3
+#=> "Default string" #getting default value
+foo.field3 = "bar"
+#=> "bar"
+foo.field3
+#=> "bar"
 
-if foo.valid?
-  foo.save #save object
-else
-  puts foo.errors #you can get nice errors what is wrong
-end
-
-# custom errors in initialize etc.
-#class declaration
-def initialize args = {}
-  error << "My custom error"
-  super args
-end
-#then valid? will produce false and when asked instance.errors you will get array with your errors
-
+#you can get all attributes by calling
+foo.to_args
+#or to JSON
+foo.to_json
 
 #you can update more attributes at once
 foo.update(:field1 => 234, :field3 => "bar")
 
-# !!! if you try to save invalid object you will get ArgumentError exception !!!
+# you can validate your object
+
+foo.valid?
+#=> true | false -> depending on validations
+
+#You can save
+unless foo.save #save returns instance -> valid save | false -> some errors
+  puts foo.errors #you can get nice errors what is wrong
+end
+
+# you can use create
+bar = TestRedisModel.create field1: 123
+# but don't forget to ask for errors
+if (bar = TestRedisModel.create field1: 123).errors.any?
+  puts bar.errors
+end
+# this will return if there was validation error before creation
 
 # after save you can find and get object find_by_alias
 
@@ -132,17 +152,37 @@ TestRedisModel.exists?(:field3 => "foo", :field4=> true)
 
 #you can try to find by alias - alias needs to be uniq 
 #use alias only for uniq combination of keys
-TestRedisModel.find_by_alias(:token, :field4=> true) 
-
+TestRedisModel.find_by_alias :token, :field4=> true
+# or by generated method:
+TestRedisModel.find_by_token :field4=> true
+# if nothing exists
+#=> nil
+# if there is saved something
+#=> [<TestRedisModel: ...>, <TestRedisModel: ...>, ...]
 ```
 
-Now you can easily access all attributes from TestRedisModel by `foo.integer` or exists? `foo.integer?` or set value by `foo.integer = 1234` 
 
-You can initialize model by `foo = TestRedisModel.new(:field1 => 123, :field3 => "bar")` and then access it same as above.
+## Change log
 
-Saving is easy too: `foo.save` -> It will raise exception if :required attributes aren't filled. Error message says what is missing.
-
-
+* 0.4.1 
+ * Fixed bugs in intialization
+ * Changed aliases to use key - array instead of key - value (enable find by category...) WIKI: [Aliases](https://github.com/ondrejbartas/redis-model-extension/wiki/Aliases)
+ * Add better readme and filled [WIKI](https://github.com/ondrejbartas/redis-model-extension/wiki)
+* 0.4.0 
+ * Redesigned initialization method from: [old one](https://github.com/ondrejbartas/redis-model-extension/wiki/Old-initialization) to: [new one](https://github.com/ondrejbartas/redis-model-extension/wiki/New-initialization)
+ * Added [Before After Hooks](https://github.com/ondrejbartas/redis-model-extension/wiki/Before-After-Hooks)
+ * Added [Auto-increment IDs](https://github.com/ondrejbartas/redis-model-extension/wiki/Auto-increment-IDs)
+ * Added dynamic aliases
+ * Added [Active Model Validations](https://github.com/ondrejbartas/redis-model-extension/wiki/Validations)
+ * REFACTORED whole structure of redis model (similar methods moved to separate modules)
+ * Set default to save nil values to redis
+* 0.3.8
+ * Allow to don't save nil values into redis
+* 0.3.7
+ * Fix dependencies
+* 0.3.6
+ * Fix problem with working in Forks
+* for older look at [Commit messages](https://github.com/ondrejbartas/redis-model-extension/commits/master)
 
 ## Contributing to redis-model-extension
  
