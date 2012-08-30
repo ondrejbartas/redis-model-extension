@@ -37,7 +37,7 @@ module RedisModelExtension
           #perform save to redis hash
           RedisModelExtension::Database.redis.hmset(generated_key, *args.inject([]){ |arr,kv| arr + [kv[0], value_to_redis(kv[0], kv[1])]})
           
-          #destroy aliases
+          # destroy aliases
           destroy_aliases!
           create_aliases
 
@@ -66,7 +66,7 @@ module RedisModelExtension
     def create_aliases
       main_key = redis_key
       redis_alias_config.each do |alias_name, fields|
-        RedisModelExtension::Database.redis.set(redis_alias_key(alias_name), main_key) if valid_alias_key? alias_name
+        RedisModelExtension::Database.redis.sadd(redis_alias_key(alias_name), main_key) if valid_alias_key? alias_name
       end
     end
 
@@ -98,7 +98,9 @@ module RedisModelExtension
       #do it only if it is existing object!
       if redis_old_keys[:aliases].size > 0
         redis_old_keys[:aliases].each do |alias_key|
-          RedisModelExtension::Database.redis.del alias_key
+          RedisModelExtension::Database.redis.srem alias_key, redis_old_keys[:key]
+          #delete alias with 0 keys
+          RedisModelExtension::Database.redis.del(alias_key) if RedisModelExtension::Database.redis.scard(alias_key).to_i == 0
         end
       end
     end

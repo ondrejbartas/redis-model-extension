@@ -150,7 +150,7 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
             
       context "alias" do
         should "be getted by alias" do
-          @getted_model = TestOldRedisModel.get_by_alias(:token ,@args)
+          @getted_model = TestOldRedisModel.get_by_alias(:token ,@args).first
           assert_equal @getted_model.integer, @test_model.integer
           assert_equal @getted_model.string, @test_model.string
           assert_equal @getted_model.symbol, @test_model.symbol
@@ -158,10 +158,10 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
         end
         
         should "be getted after change in alias" do
-          getted_model = TestOldRedisModel.get_by_alias(:token ,@args)
+          getted_model = TestOldRedisModel.get_by_alias(:token ,@args).first
           getted_model.symbol = "Test_token"
           getted_model.save
-          assert_equal getted_model.integer, TestOldRedisModel.get_by_alias(:token ,:symbol => "Test_token").integer
+          assert_equal getted_model.integer, TestOldRedisModel.get_by_alias(:token ,:symbol => "Test_token").first.integer
         end
       end
     end

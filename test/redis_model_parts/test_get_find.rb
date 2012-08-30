@@ -58,11 +58,21 @@ class GetFindTest < Test::Unit::TestCase
       end
 
       should "be getted by alias" do
-        @getted_model = TestRedisModel.get_by_alias(:token, @args)
+        @getted_model = TestRedisModel.get_by_alias(:token, @args).first
         assert_equal @getted_model.integer, @test_model.integer
         assert_equal @getted_model.string, @test_model.string
         assert_equal @getted_model.symbol, @test_model.symbol
         assert_equal @getted_model.boolean, @test_model.boolean
+      end
+
+      should "and have more than one instances in one alias" do
+        test_model2 = TestRedisModel.new(@args.merge(string: "test2"))
+        test_model2.save
+        test_model3 = TestRedisModel.new(@args.merge(string: "test3"))
+        test_model3.save
+        assert_equal TestRedisModel.get_by_alias(:token, @args).size, 3, "Should have 3 instances under 1 alias (find)"
+        assert_equal TestRedisModel.find_by_alias(:token, @args).size, 3, "Should have 3 instances under 1 alias (get)"
+        assert_same_elements TestRedisModel.find_by_alias(:token, @args).collect{|t| t.string }, ["foo", "test2", "test3"]
       end
 
       should "be find by alias" do
@@ -100,10 +110,12 @@ class GetFindTest < Test::Unit::TestCase
       end
     
       should "be getted after change in alias" do
-        getted_model = TestRedisModel.get_by_alias(:token ,@args)
+        getted_models = TestRedisModel.get_by_alias(:token ,@args)
+        assert_equal getted_models.size, 1, "Should return array of objects"
+        getted_model = getted_models.first
         getted_model.symbol = "Test_token"
         getted_model.save
-        assert_equal getted_model.integer, TestRedisModel.get_by_alias(:token ,:symbol => "Test_token").integer
+        assert_equal getted_model.integer, TestRedisModel.get_by_alias(:token ,:symbol => "Test_token").first.integer
       end
     end
 

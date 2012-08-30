@@ -50,13 +50,13 @@ module RedisModelExtension
       search_key = klass.generate_alias_key(alias_name, args)
       #is key specified directly? -> no needs of looking for other keys! -> faster
       unless search_key =~ /\*/
-        out << klass.get_by_alias(alias_name, args) if klass.alias_exists?(alias_name, args)
+        out = klass.get_by_alias(alias_name, args) if klass.alias_exists?(alias_name, args)
       else
         RedisModelExtension::Database.redis.keys(search_key).each do |key|
           out << klass.get_by_alias_key(key)
         end
       end
-      out
+      out.flatten
     end
 
     ######################################
@@ -95,8 +95,11 @@ module RedisModelExtension
 
       klass = self.name.constantize
       if klass.valid_alias_key?(alias_name, args) && klass.alias_exists?(alias_name, args)
-        key = RedisModelExtension::Database.redis.get(klass.generate_alias_key(alias_name, args))
-        return klass.new_by_key(key) if RedisModelExtension::Database.redis.exists(key)
+        out = []
+        RedisModelExtension::Database.redis.smembers(klass.generate_alias_key(alias_name, args)).each do |key|
+          out << klass.new_by_key(key) if RedisModelExtension::Database.redis.exists(key)
+        end
+        return out
       end
       nil
     end    
@@ -120,12 +123,14 @@ module RedisModelExtension
     def get_by_alias_key(alias_key)
       klass = self.name.constantize
       if RedisModelExtension::Database.redis.exists(alias_key)
-        key = RedisModelExtension::Database.redis.get(alias_key)
-        return klass.new_by_key(key) if RedisModelExtension::Database.redis.exists(key)
+        out = []
+        RedisModelExtension::Database.redis.smembers(alias_key).each do |key|
+          out << klass.new_by_key(key) if RedisModelExtension::Database.redis.exists(key)
+        end
+        return out
       end
       nil
     end 
-
 
     ######################################
     #  CREATE NEW OBJECT BY HASH VALUES

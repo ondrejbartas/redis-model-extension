@@ -87,15 +87,19 @@ class DynamicAliasTest < Test::Unit::TestCase
       end
 
       should "be getted by dynamic alias" do
-        @getted_model = DynamicAlias.get_by_alias(:items_with_name, @args)
-        assert_not_nil @getted_model, "Should return model"
+        @getted_models = DynamicAlias.get_by_alias(:items_with_name, @args)
+        assert_not_nil @getted_models, "Should return array"
+        assert_equal @getted_models.size, 1, "Should return [] with 1 instance"
+        @getted_model = @getted_models.first
         assert_equal @getted_model.name, @dynamic_alias.name
         assert_same_elements @getted_model.items.to_json.split(","), @dynamic_alias.items.to_json.split(",")
       end
 
       should "be getted by get_by_name_of_alias" do
-        @getted_model = DynamicAlias.get_by_items_with_name(@args)
-        assert_not_nil @getted_model, "Should return model"
+        @getted_models = DynamicAlias.get_by_items_with_name(@args)
+        assert_not_nil @getted_models, "Should return array"
+        assert_equal @getted_models.size, 1, "Should return [] with 1 instance"
+        @getted_model = @getted_models.first
         assert_equal @getted_model.name, @dynamic_alias.name
         assert_same_elements @getted_model.items.to_json.split(","), @dynamic_alias.items.to_json.split(",")
       end
@@ -133,12 +137,12 @@ class DynamicAliasTest < Test::Unit::TestCase
       end
     
       should "be getted after change in alias" do
-        @getted_model = DynamicAlias.get_by_alias(:items_with_name ,@args)
+        @getted_model = DynamicAlias.get_by_alias(:items_with_name ,@args).first
         assert_not_nil @getted_model, "Should return model"
         @getted_model.items[:bar] = "Test_bar"
         @getted_model.save
-
-        assert_equal DynamicAlias.get_by_alias(:items_with_name ,@getted_model.to_arg).name, @getted_model.name
+        assert_equal DynamicAlias.get_by_alias(:items_with_name ,@getted_model.to_arg).first.name, @getted_model.name
+        assert_nil DynamicAlias.get_by_alias(:items_with_name ,@args), "Should not be found by old alias"
       end
     end
 
