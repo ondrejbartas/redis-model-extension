@@ -16,42 +16,41 @@ require 'database'
 
 module RedisModelExtension
   extend ActiveSupport::Concern
-  #include all needed modules directly into main class
-  def self.included(base) 
-    base.class_eval do
-      extend ClassInitialize
-      extend ClassOldInitialize
-      extend ClassConfig
-      extend ClassGetFind
-      extend ClassRedisKey  
-      extend ClassCreate
-      extend ClassValidations
-      extend ClassAutoincrementId
 
-      include Initialize
-      include ActiveModelIntegration
-      include Attributes
-      include AutoincrementId
-      include RedisKey
-      include StoreKeys
-      include Config
-      include SaveDestroy
-      include Validations
-      include ValueTransform
-    end
+  #include all needed modules directly into main class
+  included do
+    extend ClassInitialize
+    extend ClassOldInitialize
+    extend ClassConfig
+    extend ClassGetFind
+    extend ClassRedisKey
+    extend ClassCreate
+    extend ClassValidations
+    extend ClassAutoincrementId
+
+    include Initialize
+    include ActiveModelIntegration
+    include Attributes
+    include AutoincrementId
+    include RedisKey
+    include StoreKeys
+    include Config
+    include SaveDestroy
+    include Validations
+    include ValueTransform
   end
 
   module ActiveModelIntegration
-    def self.included(base)
-      base.class_eval do
-        include ActiveModel::AttributeMethods
-        include ActiveModel::Validations
-        include ActiveModel::Naming
-        include ActiveModel::Conversion
+    extend ActiveSupport::Concern
 
-        extend  ActiveModel::Callbacks
-        define_model_callbacks :save, :destroy, :create
-      end
+    included do
+      include ActiveModel::AttributeMethods
+      include ActiveModel::Validations
+      include ActiveModel::Naming
+      include ActiveModel::Conversion
+
+      extend  ActiveModel::Callbacks
+      define_model_callbacks :save, :destroy, :create
     end
   end
 

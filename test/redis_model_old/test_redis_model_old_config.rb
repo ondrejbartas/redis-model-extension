@@ -168,20 +168,6 @@ class RedisModelOldConfigTest < Test::Unit::TestCase
     
     context "without rejected nil values on save" do
       setup do
-        class NilTestOldRedisModel
-          REDIS_MODEL_CONF = {
-             :fields => { 
-               :integer => :to_i,
-               :string => :to_s,
-              }, 
-              :required => [:string],
-              :redis_key => [:string],
-              :redis_aliases => {},
-              :reject_nil_values => false
-           }
-           include RedisModel
-           initialize_redis_model_methods REDIS_MODEL_CONF
-        end
         @args = {integer: 100, string: "test"}
         @nil_test_model = NilTestOldRedisModel.new(@args)
       end

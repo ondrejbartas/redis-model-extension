@@ -36,12 +36,6 @@ module RedisModelExtension
       define_method "#{name}?" do 
         value_get(name) && !value_get(name).blank? ? true : false
       end
-
-      # default saving nil values to redis
-      redis_save_fields_with_nil true
-
-      #set default key to autoincrement id
-      set_redis_autoincrement_key
     end
 
     def set_redis_autoincrement_key
@@ -64,7 +58,6 @@ module RedisModelExtension
       private :id= #set it as private
 
       redis_fields_config[:id] = :autoincrement
-
     end
 
     def remove_redis_autoincrement_key
@@ -153,6 +146,12 @@ module RedisModelExtension
   end
 
   module Initialize
+    extend ActiveSupport::Concern
+
+    included do
+      redis_save_fields_with_nil true
+      set_redis_autoincrement_key
+    end
 
     # initialize instance    
     def initialize(args={})

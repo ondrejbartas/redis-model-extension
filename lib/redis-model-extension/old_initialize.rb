@@ -38,6 +38,8 @@ module RedisModelExtension
     def initialize_redis_model_methods conf
       puts "WARNING: This initilization method is deprecated and will be removed in future! \n Please read documentation how to change your model to use new initialization methods"
 
+      remove_redis_autoincrement_key
+
       @conf = {:reject_nil_values => true}.merge(conf)
       #take all fields and make methods for them
       conf[:fields].each do |name, action|
