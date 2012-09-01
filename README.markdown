@@ -161,6 +161,16 @@ TestRedisModel.find_by_token :field4=> true
 #=> [<TestRedisModel: ...>, <TestRedisModel: ...>, ...]
 ```
 
+## Dirty
+
+If you want to use ActiveModel::Dirty, i.e. methods like `_changed?`, `_was?` you can include
+a Dirty module to your model (right after RedisModelExtension)
+```ruby
+class MyModel
+  include RedisModelExtension
+  include RedisModelExtension::Dirty
+end
+```
 
 ## Change log
 

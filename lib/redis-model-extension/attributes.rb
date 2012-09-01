@@ -20,18 +20,23 @@ module RedisModelExtension
     def to_json
       to_arg.to_json
     end
-    
 
-    private 
+    private
 
     # get value from instance variable
     def value_get name
       instance_variable_get(:"@#{name}")
     end
+    alias :attribute :value_get
 
     # set value into instance variable
     def value_set name, value
       instance_variable_set(:"@#{name}", value_parse(value, redis_fields_defaults_config[name]))
+    end
+    alias :attribute= :value_set
+
+    def attribute?(name)
+      value_get(name) && !value_get(name).blank? ? true : false
     end
 
   end

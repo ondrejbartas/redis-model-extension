@@ -96,3 +96,14 @@ class NilTestOldRedisModel
   include RedisModel
   initialize_redis_model_methods REDIS_MODEL_CONF
 end
+
+class WithDirty
+  include RedisModelExtension
+  include RedisModelExtension::Dirty
+
+  redis_field :first_field,  :string
+  redis_field :second_field, :bool
+  redis_field :third_field,  :integer
+
+  redis_key :first_field
+end
