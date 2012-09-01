@@ -41,6 +41,11 @@ class VariableTypesTest < Test::Unit::TestCase
       assert @test_model.respond_to?(:"float?")
     end    
 
+    should "say if class has attribute method" do
+      assert TestRedisModel.attribute_method?(:integer)
+      refute TestRedisModel.attribute_method?(:nonexisting)
+    end
+
   end
 end
     
