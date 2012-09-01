@@ -68,5 +68,6 @@ require 'redis-model-extension/attributes'
 require 'redis-model-extension/save_destroy'
 require 'redis-model-extension/store_keys'
 require 'redis-model-extension/autoincrement_id'
+require 'redis-model-extension/dirty'
 #bad naming in past, will be removed
 require 'redis-model'
