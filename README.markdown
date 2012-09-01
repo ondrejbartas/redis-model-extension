@@ -174,6 +174,9 @@ end
 
 ## Change log
 
+* 0.4.2 
+ * Add ActiveModel::Dirty
+ * Change work with attributes to ActiveModel::Attributes
 * 0.4.1 
  * Fixed bugs in intialization
  * Changed aliases to use key - array instead of key - value (enable find by category...) WIKI: [Aliases](https://github.com/ondrejbartas/redis-model-extension/wiki/Aliases)
