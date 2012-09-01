@@ -19,23 +19,11 @@ module RedisModelExtension
 
       # remember field to save into redis
       redis_fields_config[name] = type
+
       # remember field default value
       redis_fields_defaults_config[name] = default
 
-      # get value
-      define_method name do
-        value_get name  
-      end
-
-      # assign new value
-      define_method "#{name}=" do |new_value|
-        value_set name, new_value
-      end
-
-      # value exists? (not nil and not blank?)
-      define_method "#{name}?" do 
-        value_get(name) && !value_get(name).blank? ? true : false
-      end
+      define_attribute_methods [name]
     end
 
     def set_redis_autoincrement_key
@@ -151,9 +139,18 @@ module RedisModelExtension
     included do
       redis_save_fields_with_nil true
       set_redis_autoincrement_key
+
+      include ActiveModel::AttributeMethods
+      # just `attribute` is defined automatically
+      attribute_method_suffix '='
+      attribute_method_suffix '?'
     end
 
-    # initialize instance    
+    def attribute_method?(attr_name)
+      self.class.redis_user_field_config.include? attr_name.to_sym
+    end
+
+    # initialize instance
     def initialize(args={})
       args = HashWithIndifferentAccess.new(args)
       # look for fields in input hash
@@ -162,11 +159,12 @@ module RedisModelExtension
         raise ArgumentError, "You cannot specify #{key} (it is auto incremented)" if args[key] && type == :autoincrement && get_last_id.to_i < args[key].to_i
 
         # input hash has known field
-        if args.has_key?(key) 
-          value_set key, value_parse(args[key], type)
+        value = if args.has_key?(key)
+          value_parse(args[key], type)
         else #there is no value set default valued
-          value_set key, redis_fields_defaults_config[key]
+          redis_fields_defaults_config[key]
         end
+        send(:attribute=, key, value)
       end
 
       return self
