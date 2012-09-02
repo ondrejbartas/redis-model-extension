@@ -8,7 +8,7 @@ class TestOldRedisModel
        :string => :to_s,
        :symbol => :to_sym,
        :array => :to_array,
-       :hash => :to_hash,
+       :field_hash => :to_hash,
       }, 
       :required => [:integer, :string],
       :redis_key => [:string],
@@ -28,7 +28,7 @@ class TestRedisModel
   redis_field :string,  :string
   redis_field :symbol,  :symbol, :default
   redis_field :array,   :array
-  redis_field :hash,    :hash
+  redis_field :field_hash, :hash
   redis_field :time,    :time
   redis_field :date,    :date
   redis_field :float,   :float

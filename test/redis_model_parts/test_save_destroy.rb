@@ -11,7 +11,7 @@ class SaveDestroyTest < Test::Unit::TestCase
         :symbol => :bar, 
         :boolean => true, 
         :array => [1,2,3], 
-        :hash => {"foo"=>"bar", "test" => 2}, 
+        :field_hash => {"foo"=>"bar", "test" => 2},
         :time => @time, 
         :date => Date.today,
         :float => 12.54,
