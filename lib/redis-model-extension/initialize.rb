@@ -23,7 +23,7 @@ module RedisModelExtension
       # remember field default value
       redis_fields_defaults_config[name] = default
 
-      define_attribute_methods [name]
+      define_attribute_method name
     end
 
     def set_redis_autoincrement_key
@@ -141,13 +141,9 @@ module RedisModelExtension
       set_redis_autoincrement_key
 
       include ActiveModel::AttributeMethods
-      # just `attribute` is defined automatically
+      attribute_method_suffix '' if ActiveModel::VERSION::MINOR < 2
       attribute_method_suffix '='
       attribute_method_suffix '?'
-    end
-
-    def attribute_method?(attr_name)
-      self.class.redis_user_field_config.include? attr_name.to_sym
     end
 
     # initialize instance
