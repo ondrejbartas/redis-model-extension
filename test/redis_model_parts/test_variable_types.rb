@@ -12,7 +12,7 @@ class VariableTypesTest < Test::Unit::TestCase
         :symbol => :bar, 
         :boolean => true, 
         :array => [1,2,3], 
-        :hash => {"foo"=>"bar", "test" => 2}, 
+        :field_hash => {"foo"=>"bar", "test" => 2},
         :time => @time, 
         :date => Date.today,
         :float => 12.43,
@@ -35,7 +35,7 @@ class VariableTypesTest < Test::Unit::TestCase
       assert_equal @test_model.symbol, :bar
       assert_equal @test_model.boolean, true
       assert_equal @test_model.array, [1,2,3]
-      assert_equal @test_model.hash, {:foo=>"bar", :test => 2}
+      assert_equal @test_model.field_hash, {:foo=>"bar", :test => 2}
       assert_equal @test_model.time, @time
       assert_equal @test_model.date, Date.today
       assert_equal @test_model.float, 12.43
@@ -51,7 +51,7 @@ class VariableTypesTest < Test::Unit::TestCase
       assert_equal @test_model.symbol?, true
       assert_equal @test_model.boolean?, true
       assert_equal @test_model.array?, true
-      assert_equal @test_model.hash?, true
+      assert_equal @test_model.field_hash?, true
       assert_equal @test_model.time?, true
       assert_equal @test_model.date?, true
       assert_equal @test_model.float?, true
@@ -60,7 +60,7 @@ class VariableTypesTest < Test::Unit::TestCase
       assert_equal @test_model_partial.string?, true
       assert_equal @test_model_partial.symbol?, true, "should be set by default value"
       assert_equal @test_model_partial.boolean?, false
-      assert_equal @test_model_partial.hash?, false
+      assert_equal @test_model_partial.field_hash?, false
       assert_equal @test_model_partial.array?, false
       assert_equal @test_model_partial.time?, false
       assert_equal @test_model_partial.date?, false
@@ -73,7 +73,7 @@ class VariableTypesTest < Test::Unit::TestCase
       @test_model.symbol = :foo
       @test_model.boolean = false
       @test_model.array = [4,5,6]
-      @test_model.hash = {:bar => "foo"}
+      @test_model.field_hash = {:bar => "foo"}
       @test_model.time = @time-100
       @test_model.date = Date.today-10
       @test_model.float = 25.43
@@ -82,7 +82,7 @@ class VariableTypesTest < Test::Unit::TestCase
       assert_equal @test_model.symbol, :foo
       assert_equal @test_model.boolean, false
       assert_equal @test_model.array, [4,5,6]
-      assert_equal @test_model.hash, {:bar => "foo"}
+      assert_equal @test_model.field_hash, {:bar => "foo"}
       assert_equal @test_model.time, @time-100
       assert_equal @test_model.date, Date.today-10
       assert_equal @test_model.float, 25.43

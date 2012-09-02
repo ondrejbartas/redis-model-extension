@@ -10,7 +10,7 @@ class AttributesTest < Test::Unit::TestCase
         :symbol => :bar, 
         :boolean => true, 
         :array => [1,2,3], 
-        :hash => {:foo=>"bar", :test => 2}, 
+        :field_hash => {:foo=>"bar", :test => 2},
         :time => @time, 
         :date => Date.today,
         :float => 12.32,
@@ -31,11 +31,11 @@ class AttributesTest < Test::Unit::TestCase
     end
 
     should "should access hash by []" do
-      assert_equal @test_model.hash[:foo], "bar"
+      assert_equal @test_model.field_hash[:foo], "bar"
     end
 
     should "should access hash by hashr" do
-      assert_equal @test_model.hash.foo, "bar"
+      assert_equal @test_model.field_hash.foo, "bar"
     end
 
   end
