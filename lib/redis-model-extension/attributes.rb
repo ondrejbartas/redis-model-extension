@@ -18,8 +18,8 @@ module RedisModelExtension
     alias :attributes :to_arg
 
     #put arguments into json
-    def to_json
-      to_arg.to_json
+    def to_json(*args)
+      to_arg.to_json(*args)
     end
 
     private
