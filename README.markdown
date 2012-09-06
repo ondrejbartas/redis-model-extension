@@ -77,6 +77,7 @@ class TestRedisModel
   redis_field :field6,    :hash
   redis_field :field7,    :time
   redis_field :field8,    :date
+  redis_field :field9,    :marshal #this will take anything and Marshal.dump -> to redis & redis -> Marshal.load
   
   # which columns are used for generating redis key - name_of_your_class:key:field1:field2...
   redis_key :field1, :field2

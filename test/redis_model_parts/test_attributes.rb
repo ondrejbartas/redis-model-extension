@@ -14,6 +14,7 @@ class AttributesTest < Test::Unit::TestCase
         :time => @time, 
         :date => Date.today,
         :float => 12.32,
+        :field_marshal => {"foo" => "bar"},
       }
       @test_model = TestRedisModel.new(@args)
     end 
