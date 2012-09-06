@@ -148,7 +148,7 @@ module RedisModelExtension
 
     # initialize instance
     def initialize(args={})
-      args = HashWithIndifferentAccess.new(args)
+      args.symbolize_keys!
       # look for fields in input hash
       redis_fields_config.each do |key, type|
         # disable to set nonexisting ID!
