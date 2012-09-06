@@ -3,6 +3,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'pp'
 require 'benchmark'
+require 'json'
 require 'redis-model-extension'
 COUNT = (ENV['COUNT'] || 10000).to_i
 

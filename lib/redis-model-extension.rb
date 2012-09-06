@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 require 'pp'
 require 'yaml'
-require 'json'
+require 'yajl'
 require 'redis'
 require 'hashr'
 require 'active_model'

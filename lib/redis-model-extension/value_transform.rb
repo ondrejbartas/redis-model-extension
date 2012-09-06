@@ -21,8 +21,8 @@ module RedisModelExtension
       when :float then value.to_f
       when :bool then value.to_s
       when :symbol then value.to_s
-      when :array then value.to_json
-      when :hash then value.to_json
+      when :array then Yajl::Encoder.encode(value)
+      when :hash then Yajl::Encoder.encode(value)
       when :time then Time.parse(value.to_s).strftime("%Y.%m.%d %H:%M:%S")
       when :date then Date.parse(value.to_s).strftime("%Y-%m-%d")
       else value
@@ -39,8 +39,8 @@ module RedisModelExtension
       when :float then value.to_f
       when :bool then value.to_s.to_bool
       when :symbol then value.to_s.to_sym
-      when :array then value.is_a?(String) ? JSON.parse(value) : value
-      when :hash then value.is_a?(String) ? Hashr.new(JSON.parse(value)) : Hashr.new(value)
+      when :array then value.is_a?(String) ? Yajl::Parser.parse(value) : value
+      when :hash then value.is_a?(String) ? Hashr.new(Yajl::Parser.parse(value)) : Hashr.new(value)
       when :time then value.is_a?(String) ? Time.parse(value) : value
       when :date then value.is_a?(String) ? Date.parse(value) : value
       else value

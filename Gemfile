@@ -5,6 +5,7 @@ gem "i18n"
 gem "activesupport"
 gem "activemodel"
 gem "hashr"
+gem "yajl-ruby"
 
 group :development do
   gem "shoulda", ">= 0"
@@ -17,6 +18,7 @@ group :development do
   gem "bundler"
   gem "jeweler"
   gem "turn"
+  gem "json"
   gem "minitest"
   gem "ansi" 
 end
