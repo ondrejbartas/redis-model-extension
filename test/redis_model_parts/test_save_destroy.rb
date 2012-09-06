@@ -15,6 +15,7 @@ class SaveDestroyTest < Test::Unit::TestCase
         :time => @time, 
         :date => Date.today,
         :float => 12.54,
+        :field_marshal => {"foo" => [:bar]},
       }
       @test_model = TestRedisModel.new(@args)
     end 

@@ -32,6 +32,7 @@ class TestRedisModel
   redis_field :time,    :time
   redis_field :date,    :date
   redis_field :float,   :float
+  redis_field :field_marshal, :marshal
 
   validates :integer, :presence => true
     
