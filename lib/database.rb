@@ -22,9 +22,9 @@ module RedisModelExtension
 
     def self.redis= redis
       if redis.is_a?(Redis) #valid redis instance
-        @redis = redis  
+        Thread.current[:redis_model_extension] = redis  
       elsif redis.nil? #remove redis instance for changing connection or using in next call configs
-        @redis = nil
+        Thread.current[:redis_model_extension] = nil
       else #else you assigned something wrong
         raise ArgumentError, "You have to assign Redis instance!"
       end
@@ -32,11 +32,11 @@ module RedisModelExtension
 
     def self.redis
       #if redis is already defined
-      return @redis if @redis
+      return Thread.current[:redis_model_extension] if Thread.current[:redis_model_extension]
       #if you provided redis config
-      return @redis = Redis.new(@redis_config) if @redis_config
+      return Thread.current[:redis_model_extension] = Redis.new(@redis_config) if @redis_config
       #if you provided yml config
-      return @redis = Redis.new(Database.config)
+      return Thread.current[:redis_model_extension] = Redis.new(Database.config)
     end
 
   end
